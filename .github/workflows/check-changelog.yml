@@ -14,9 +14,11 @@ jobs:
         uses: tj-actions/verify-changed-files@v5.5
         id: changed_files
         with:
+          token: ${{ github.token }}
           files: |
             CHANGELOG.md
+
       - name: 📖 Check if changelog was updated
-      	if: steps.changed_files.outputs.files_changed == 'false'
+        if: steps.changed_files.outputs.files_changed == 'false'
         run: |
           exit 1
