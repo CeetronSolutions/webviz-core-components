@@ -9,6 +9,7 @@ jobs:
   check-changelog:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: 📖 Verify changelog updates
         uses: tj-actions/verify-changed-files@v5.5
         id: changed_files
@@ -19,4 +20,3 @@ jobs:
       	if: steps.changed_files.outputs.files_changed == 'false'
         run: |
           exit 1
-
