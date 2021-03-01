@@ -1,0 +1,10 @@
+{
+    "pull_request": {
+        "head": {
+            "ref": "refs/heads/added-changelog-and-action"
+        },
+        "base": {
+            "ref": "refs/heads/master"
+        }
+    }
+}

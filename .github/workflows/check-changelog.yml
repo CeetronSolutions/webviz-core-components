@@ -2,23 +2,23 @@ name: check changelog
 
 on:
   pull_request:
-    branches:
-      - master
+  #  branches:
+  #    - master
 
 jobs:
   check-changelog:
+    if: contains(github.event.head_commit.message, '[skip changelog]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: 📖 Verify changelog updates
-        uses: tj-actions/verify-changed-files@v5.5
+        uses: dorny/paths-filter@v2
         id: changed_files
         with:
-          token: ${{ github.token }}
-          files: |
-            CHANGELOG.md
-
-      - name: 📖 Check if changelog was updated
-        if: steps.changed_files.outputs.files_changed == 'false'
+          filters: |
+            changelog:
+              - 'CHANGELOG.md'
+      - name: 📖 Let job fail if changelog not updated
+        if: steps.changed_files.outputs.changelog == 'false'
         run: |
           exit 1
