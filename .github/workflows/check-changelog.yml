@@ -16,7 +16,7 @@ jobs:
           files: |
             CHANGELOG.md
       - name: 📖 Check if changelog was updated
-      	if: steps.changed_changelog.outputs.files_changed != 'true'
+      	if: steps.changed_changelog.outputs.files_changed == 'false'
         run: |
           exit 1
 
