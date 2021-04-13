@@ -24,6 +24,7 @@ export default class TreeData {
         this.treeData = treeData;
         this.delimiter = delimiter;
         this.nodeData = [];
+        this.stringifiedData = "";
 
         this.populateNodes();
     }
@@ -119,7 +120,7 @@ export default class TreeData {
         }
         const result: TreeDataNodeMetaData[] = [];
         for (let i = 1; i < match.length; i++) {
-            result.push(this.nodeData[match[i]]);
+            result.push(this.nodeData[parseInt(match[i])]);
         }
         return result;
     }
@@ -148,7 +149,7 @@ export default class TreeData {
 
             suggestions.push({
                 nodeName: match[nodePath.length + 1],
-                metaData: this.nodeData[match[nodePath.length + 0]]
+                metaData: this.nodeData[parseInt(match[nodePath.length + 0])]
             });
         }
         return suggestions;
@@ -179,7 +180,7 @@ export default class TreeData {
 
             childNodes.push({
                 nodeName: match[nodePath.length + 2],
-                metaData: this.nodeData[match[nodePath.length + 1]]
+                metaData: this.nodeData[parseInt(match[nodePath.length + 1])]
             });
         }
         return childNodes;
@@ -208,7 +209,7 @@ export default class TreeData {
         while ((match = re.exec(this.stringifiedData)) !== null) {
             const nodesInPath: TreeDataNodeMetaData[] = [];
             for (let i = 2; i < match.length; i++) {
-                nodesInPath.push(this.nodeData[match[i]]);
+                nodesInPath.push(this.nodeData[parseInt(match[i])]);
             }
             metaData.push(nodesInPath);
             nodePaths.push(this.cleanNodeName(match[1]));
