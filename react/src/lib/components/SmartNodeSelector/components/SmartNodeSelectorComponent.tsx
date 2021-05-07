@@ -36,6 +36,7 @@ export type SmartNodeSelectorPropsType = {
     showSuggestions: boolean,
     setProps: (props: ParentProps) => void,
     selectedTags?: string[],
+    defaultSelectedTags?: string[],
     placeholder?: string,
     numSecondsUntilSuggestionsAreShown: number,
     persistence: boolean | string | number,
@@ -96,6 +97,7 @@ export default class SmartNodeSelectorComponent extends Component<SmartNodeSelec
         numMetaNodes: 0,
         showSuggestions: true,
         selectedTags: undefined,
+        defaultSelectedTags: undefined,
         placeholder: "Add new tag...",
         numSecondsUntilSuggestionsAreShown: 1.5,
         persisted_props: ['selectedTags'],
@@ -136,8 +138,9 @@ export default class SmartNodeSelectorComponent extends Component<SmartNodeSelec
         }
 
         const nodeSelections: TreeNodeSelection[] = [];
-        if (props.selectedTags !== undefined) {
-            for (const tag of props.selectedTags) {
+        const selectedTags = props.selectedTags !== undefined ? props.selectedTags : props.defaultSelectedTags;
+        if (selectedTags !== undefined) {
+            for (const tag of selectedTags) {
                 const nodePath = tag.split(this.props.delimiter);
                 nodeSelections.push(this.createNewNodeSelection(nodePath));
             }
@@ -1127,6 +1130,11 @@ SmartNodeSelectorComponent.propTypes = {
      * to Dash, to make them available for callbacks.
      */
     setProps: PropTypes.func,
+
+    /**
+     * Default selected tags.
+     */
+    defaultSelectedTags: PropTypes.arrayOf(PropTypes.string),
 
     /**
      * Selected tags.

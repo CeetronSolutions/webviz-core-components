@@ -24,6 +24,7 @@ const SmartNodeSelector = props => {
             label={props.label}
             showSuggestions={props.showSuggestions}
             setProps={props.setProps}
+            defaultSelectedTags={props.defaultSelectedTags}
             selectedTags={props.selectedTags}
             placeholder={props.placeholder}
             numSecondsUntilSuggestionsAreShown={
@@ -40,6 +41,7 @@ SmartNodeSelector.defaultProps = {
     numMetaNodes: 0,
     showSuggestions: true,
     selectedTags: undefined,
+    defaultSelectedTags: undefined,
     placeholder: "Add new tag...",
     numSecondsUntilSuggestionsAreShown: 1.5,
     persisted_props: ['selectedTags'],
@@ -88,6 +90,11 @@ SmartNodeSelector.propTypes = {
      * to Dash, to make them available for callbacks.
      */
     setProps: PropTypes.func,
+
+    /**
+     * Default selected tags.
+     */
+    defaultSelectedTags: PropTypes.arrayOf(PropTypes.string),
 
     /**
      * Selected tags.
