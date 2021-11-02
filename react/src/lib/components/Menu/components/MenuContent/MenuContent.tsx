@@ -202,10 +202,12 @@ export const MenuContent: React.FC<MenuContentProps> = (props) => {
                 <FilterInput filter={filter} onFilterChange={setFilter} />
             </div>
             <ScrollArea>
-                {content.length === 0 ? (
+                {content.length === 0 && filter !== "" ? (
                     <div className="Menu__NoResults">
                         No pages matching the query...
                     </div>
+                ) : content.length === 0 ? (
+                    <div className="Menu__NoResults">No pages...</div>
                 ) : (
                     makeNavigation(
                         content,

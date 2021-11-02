@@ -28,7 +28,7 @@ export type ParentProps = {
     url: string;
 };
 
-type MenuProps = {
+export type MenuProps = {
     id?: string;
     navigationItems: PropertyNavigationType;
     initiallyPinned?: boolean;
