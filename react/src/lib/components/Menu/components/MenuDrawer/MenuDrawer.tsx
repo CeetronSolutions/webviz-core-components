@@ -12,6 +12,7 @@ type MenuDrawerProps = {
     pinned: boolean;
     maxWidth: number;
     currentUrl: string;
+    inline: boolean;
     children?: React.ReactNode;
 };
 
@@ -206,6 +207,7 @@ export const MenuDrawer = React.forwardRef<HTMLDivElement, MenuDrawerProps>(
                     bottom: position.bottom,
                     width: props.maxWidth + "px",
                     maxWidth: props.maxWidth + "px",
+                    position: props.inline ? "absolute" : "fixed",
                 }}
             >
                 {props.pinned && (
@@ -235,6 +237,7 @@ MenuDrawer.propTypes = {
     pinned: PropTypes.bool.isRequired,
     maxWidth: PropTypes.number.isRequired,
     currentUrl: PropTypes.string.isRequired,
+    inline: PropTypes.bool.isRequired,
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node,

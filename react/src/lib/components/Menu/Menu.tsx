@@ -37,6 +37,7 @@ export type MenuProps = {
     menuDrawerPosition?: "left" | "right";
     showLogo?: boolean;
     url?: string;
+    inline?: boolean;
     setProps?: (props: ParentProps) => void;
 };
 
@@ -192,36 +193,41 @@ export const Menu: React.FC<MenuProps> = (props) => {
     }, [props.navigationItems, windowSize.width]);
 
     React.useEffect(() => {
-        const bodyMargins = { left: 16, top: 16, right: 16, bottom: 16 };
+        if (!props.inline) {
+            const bodyMargins = { left: 16, top: 16, right: 16, bottom: 16 };
 
-        if (!pinned) {
-            if (props.menuBarPosition === "left") {
-                bodyMargins.left = menuBarWidth + menuContentSpacing;
-            } else if (props.menuBarPosition === "top") {
-                bodyMargins.top = menuBarHeight + menuContentSpacing;
-            } else if (props.menuBarPosition === "right") {
-                bodyMargins.right = menuBarWidth + menuContentSpacing;
-            } else if (props.menuBarPosition === "bottom") {
-                bodyMargins.bottom = menuBarHeight + menuContentSpacing;
+            if (!pinned) {
+                if (props.menuBarPosition === "left") {
+                    bodyMargins.left = menuBarWidth + menuContentSpacing;
+                } else if (props.menuBarPosition === "top") {
+                    bodyMargins.top = menuBarHeight + menuContentSpacing;
+                } else if (props.menuBarPosition === "right") {
+                    bodyMargins.right = menuBarWidth + menuContentSpacing;
+                } else if (props.menuBarPosition === "bottom") {
+                    bodyMargins.bottom = menuBarHeight + menuContentSpacing;
+                }
+            } else {
+                if (props.menuDrawerPosition === "left") {
+                    bodyMargins.left += menuDrawerWidth;
+                } else if (props.menuBarPosition === "right") {
+                    bodyMargins.right += menuDrawerWidth;
+                }
             }
-        } else {
-            if (props.menuDrawerPosition === "left") {
-                bodyMargins.left += menuDrawerWidth;
-            } else if (props.menuBarPosition === "right") {
-                bodyMargins.right += menuDrawerWidth;
-            }
+
+            document.body.style.marginLeft = bodyMargins.left + "px";
+            document.body.style.marginTop = bodyMargins.top + "px";
+            document.body.style.marginRight = bodyMargins.right + "px";
+            document.body.style.marginBottom = bodyMargins.bottom + "px";
         }
-
-        document.body.style.marginLeft = bodyMargins.left + "px";
-        document.body.style.marginTop = bodyMargins.top + "px";
-        document.body.style.marginRight = bodyMargins.right + "px";
-        document.body.style.marginBottom = bodyMargins.bottom + "px";
     }, [
         menuBarWidth,
         menuDrawerWidth,
         pinned,
         menuBarPosition,
         menuDrawerPosition,
+        props.menuBarPosition,
+        props.menuDrawerPosition,
+        props.inline,
     ]);
 
     const handlePageChange = React.useCallback(
@@ -251,6 +257,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
             />
             <MenuDrawer
                 position={menuDrawerPosition as MenuDrawerPosition}
+                inline={props.inline || false}
                 open={open || pinned}
                 pinned={pinned}
                 ref={menuDrawerRef}
@@ -319,6 +326,11 @@ Menu.propTypes = {
      * A list of navigation items to show in the menu.
      */
     navigationItems: PropTypes.any.isRequired,
+
+    /**
+     * Set to true if the menu shall be rendered inline and not global.
+     */
+    inline: PropTypes.bool,
 
     /**
      * Currently selected URL. Leave blank.
