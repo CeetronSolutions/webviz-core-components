@@ -21,6 +21,7 @@ type MenuContentProps = {
     content: NavigationType;
     groupsInitiallyCollapsed?: boolean;
     onPageChange: (url: string) => void;
+    showFilterInput: boolean;
 };
 
 const searchTitle = (title: string, query: string): boolean => {
@@ -198,9 +199,11 @@ export const MenuContent: React.FC<MenuContentProps> = (props) => {
 
     return (
         <div className="Menu__ContentWrapper">
-            <div className="Menu__FilterInputWrapper">
-                <FilterInput filter={filter} onFilterChange={setFilter} />
-            </div>
+            {props.showFilterInput && (
+                <div className="Menu__FilterInputWrapper">
+                    <FilterInput filter={filter} onFilterChange={setFilter} />
+                </div>
+            )}
             <ScrollArea>
                 {content.length === 0 && filter !== "" ? (
                     <div className="Menu__NoResults">
@@ -225,4 +228,5 @@ MenuContent.propTypes = {
     content: PropTypes.any.isRequired,
     groupsInitiallyCollapsed: PropTypes.bool,
     onPageChange: PropTypes.func.isRequired,
+    showFilterInput: PropTypes.bool.isRequired,
 };

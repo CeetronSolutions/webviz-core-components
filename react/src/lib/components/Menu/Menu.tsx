@@ -38,6 +38,7 @@ export type MenuProps = {
     showLogo?: boolean;
     url?: string;
     inline?: boolean;
+    showFilterInput?: boolean;
     setProps?: (props: ParentProps) => void;
 };
 
@@ -279,6 +280,11 @@ export const Menu: React.FC<MenuProps> = (props) => {
                     content={navigationItemsWithAssignedIds}
                     groupsInitiallyCollapsed={props.initiallyCollapsed}
                     onPageChange={handlePageChange}
+                    showFilterInput={
+                        props.showFilterInput === undefined
+                            ? true
+                            : props.showFilterInput
+                    }
                 />
             </MenuDrawer>
         </div>
@@ -333,6 +339,11 @@ Menu.propTypes = {
     inline: PropTypes.bool,
 
     /**
+     * Set to false to hide the filter input field.
+     */
+    showFilterInput: PropTypes.bool,
+
+    /**
      * Currently selected URL. Leave blank.
      */
     url: PropTypes.string,
@@ -347,5 +358,7 @@ Menu.defaultProps = {
     showLogo: true,
     menuBarPosition: "left",
     menuDrawerPosition: "left",
+    inline: false,
+    showFilterInput: true,
     url: "",
 };
