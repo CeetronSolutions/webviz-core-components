@@ -59,13 +59,23 @@ _js_dist = [
         "dev_package_path": "webviz_core_components.dev.js",
         "namespace": package_name,
     },
+    {
+        "relative_package_path": "webviz_core_components.min.js.map",
+        "namespace": package_name,
+        "dynamic": True,
+    },
 ]
 
 _css_dist = [
     {
         "relative_package_path": "webviz_core_components.css",
         "namespace": package_name,
-    }
+    },
+    {
+        "relative_package_path": "webviz_core_components.css.map",
+        "namespace": package_name,
+        "dynamic": True,
+    },
 ]
 
 
