@@ -4,6 +4,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 const packagejson = require("./package.json");
+const webpack = require("webpack");
 
 const dashLibraryName = packagejson.name
     .replace(/[-\/]/g, "_")
@@ -106,11 +107,13 @@ module.exports = (env, argv) => {
         resolve: {
             extensions: [".ts", ".tsx", ".js", ".jsx"],
         },
-        devtool: devtool,
         externals: externals,
         plugins: [
             new MiniCssExtractPlugin({
                 filename: filenameCss,
+            }),
+            new webpack.SourceMapDevToolPlugin({
+                filename: "[file].map",
             }),
         ],
         optimization: {
