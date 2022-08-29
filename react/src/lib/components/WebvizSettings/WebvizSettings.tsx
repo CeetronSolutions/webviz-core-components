@@ -61,10 +61,15 @@ export const WebvizSettings: React.FC<WebvizSettingsProps> = (
                 {props.children &&
                     React.Children.map(props.children, (child) => {
                         if (React.isValidElement(child)) {
+                            // @ts-ignore
                             return React.cloneElement(child, {
+                                // @ts-ignore
                                 _dashprivate_layout: {
+                                    // @ts-ignore
                                     ...child.props._dashprivate_layout,
+                                    // @ts-ignore
                                     props: {
+                                        // @ts-ignore
                                         ...child.props._dashprivate_layout
                                             .props,
                                         open: store.state.openSettingsGroupIds.includes(
