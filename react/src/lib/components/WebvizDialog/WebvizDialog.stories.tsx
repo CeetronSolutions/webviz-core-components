@@ -11,11 +11,27 @@ export default {
     argTypes: { actions: { control: "array" } },
 } as ComponentMeta<typeof WebvizDialog>;
 
+// const Template: ComponentStory<typeof WebvizDialog> = (
+//     args: WebvizDialogProps
+// ) => {
+//     const { ...other } = args;
+//     return (
+//         <>
+//             <Button variant="outlined">{`Open ${other.id}`}</Button>
+//             <WebvizDialog {...other} open={true}>
+//                 {other.modal
+//                     ? "This is a modal dialog. Closes when clicking on backdrop"
+//                     : "This is non-modal dialog"}
+//             </WebvizDialog>
+//         </>
+//     );
+// };
+
 const Template: ComponentStory<typeof WebvizDialog> = (
     args: WebvizDialogProps
 ) => {
     const { ...other } = args;
-    const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
+    const [dialogOpen, setDialogOpen] = React.useState<boolean>(true);
 
     return (
         <>

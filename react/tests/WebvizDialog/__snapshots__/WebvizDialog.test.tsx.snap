@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebvizDialog Render single non-modal dialog Snapshot 1`] = `
+<body>
+  <div />
+  <div
+    id="WebvizDialog__root"
+  >
+    <div>
+      <div
+        aria-label="WebvizRenderer"
+        style="display: block;"
+      >
+        <div
+          class="WebvizDialog WebvizDialog--active"
+          id="WebvizDialog"
+          style="left: 512px; top: 284px; min-width: 200px; min-height: 200px; height: 200px;"
+        >
+          <div
+            class="WebvizDialogTitle"
+          >
+            <div>
+              WebvizDialog Title
+            </div>
+            <div>
+              <button
+                aria-label="close"
+                class="MuiButtonBase-root MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                      height="24"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            class="WebvizDialogContent"
+          >
+            <div
+              style="width: 400px; height: 200px;"
+            >
+              This is the content of test dialog
+            </div>
+          </div>
+          <div
+            class="WebvizDialogActions"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
