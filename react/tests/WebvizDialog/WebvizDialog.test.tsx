@@ -1,7 +1,7 @@
 import React from "react";
 import { mount } from "enzyme";
 import { render } from "@testing-library/react";
-import { afterEach, describe, expect, test } from "@jest/globals";
+import { afterEach, describe, expect, test, jest } from "@jest/globals";
 // import "@testing-library/jest-dom";
 
 import { WebvizRenderer } from "../../src/lib/components/WebvizDialog/components/WebvizRenderer";
@@ -70,6 +70,10 @@ const modalWebvizDialog = (
         </WebvizDialog>
     );
 };
+
+let eventMap;
+let realAddEventListener;
+let realRemoveEventListener;
 
 describe("WebvizDialog", () => {
     afterEach(() => {
@@ -164,8 +168,8 @@ describe("WebvizDialog", () => {
     });
 
     test("Modal dialog backdrop click", () => {
-        const contentWidth = 400;
-        const contentHeight = 200;
+        const contentWidth = 200;
+        const contentHeight = 150;
         const component = mount(modalWebvizDialog(contentWidth, contentHeight));
 
         expect(component.find(WebvizRenderer)).toHaveLength(1);
@@ -192,4 +196,81 @@ describe("WebvizDialog", () => {
 
         component.unmount();
     });
+
+    test("Window Resize", () => {
+        const contentWidth = 200;
+        const contentHeight = 150;
+        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
+
+        const test = component.find(".WebvizDialog").first();
+
+        // Change the viewport to 500px.
+        global.innerWidth = 500;
+
+        // Trigger the window resize event.
+        global.dispatchEvent(new Event("resize"));
+
+        /// ...
+
+        // Run your assertion.
+    });
+
+    test("Dialog drag", () => {
+        const contentWidth = 200;
+        const contentHeight = 150;
+        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
+
+        console.log(component.find(".WebvizDialogTitle").first());
+        component.find(".WebvizDialogTitle").simulate("mousedown");
+
+        component.find(".WebvizDialogTitle").simulate("mousemove");
+    });
+
+    test("becomes sticky when scrolling past it and unsticky when scrolling again", () => {
+        realAddEventListener = window.addEventListener;
+        realRemoveEventListener = window.removeEventListener;
+        eventMap = {};
+
+        window.addEventListener = jest.fn((eventName, callback) => {
+            eventMap[eventName] = callback;
+        });
+
+        window.removeEventListener = jest.fn((eventName) => {
+            delete eventMap[eventName];
+        });
+
+        const contentWidth = 200;
+        const contentHeight = 150;
+        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
+        const classList = { add: jest.fn(), remove: jest.fn() };
+        const getBoundingClientRect = jest.fn();
+
+        const tmp = component.instance() as DOMComponent;
+        // component.instance().containerRef.current = {
+        //     getBoundingClientRect,
+        //     classList,
+        // };
+
+        getBoundingClientRect.mockReturnValueOnce({ top: 0 });
+        eventMap.scroll();
+
+        expect(classList.add).toHaveBeenCalledWith("sticky");
+        expect(classList.remove).not.toHaveBeenCalled();
+
+        getBoundingClientRect.mockReturnValueOnce({ top: 5 });
+        eventMap.scroll();
+
+        expect(classList.remove).toHaveBeenCalledWith("sticky");
+
+        window.addEventListener = realAddEventListener;
+        window.removeEventListener = realRemoveEventListener;
+    });
 });
+
+
+links:
+https://stackoverflow.com/questions/45868042/figuring-out-how-to-mock-the-window-size-changing-for-a-react-component-test
+https://www.reddit.com/r/reactjs/comments/buck2k/how_would_you_test_this/
+https://lightrun.com/answers/react-grid-layout-react-draggable-how-to-test-react-draggable-jest--enzyme
+
+
