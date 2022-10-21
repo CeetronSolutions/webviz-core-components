@@ -47,6 +47,15 @@ const Template: ComponentStory<typeof WebvizDialog> = (
                 {other.modal
                     ? "This is a modal dialog. Closes when clicking on backdrop. And this text is very long to verify maxHeight of the component which is hopefully finished within the next hundreds of weeks since I'm a bit tired of only working on this"
                     : "This is non-modal dialog"}
+                {/* {other.modal ? (
+                    <div style={{ width: 400, height: 200 }}>
+                        This is the content of the first dialog
+                    </div>
+                ) : (
+                    <div style={{ width: 400, height: 600 }}>
+                        This is the content of the first dialog
+                    </div>
+                )} */}
             </WebvizDialog>
         </>
     );

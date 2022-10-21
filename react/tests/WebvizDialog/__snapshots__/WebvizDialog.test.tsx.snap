@@ -59,11 +59,33 @@ exports[`WebvizDialog Render single non-modal dialog Snapshot 1`] = `
           </div>
           <div
             class="WebvizDialogContent"
+            style="height: 168px;"
           >
             <div
-              style="width: 400px; height: 200px;"
+              class="ScrollArea"
             >
-              This is the content of test dialog
+              <div
+                class="ScrollBar VerticalScrollBar ScrollBar--inactive"
+                style="display: none; top: 0px; height: 0px;"
+              />
+              <div
+                class="ScrollBar HorizontalScrollBar ScrollBar--inactive"
+                style="display: none; left: 0px; width: 0px;"
+              />
+              <div
+                class="ScrollAreaInner"
+                style="padding-right: 0px; padding-bottom: 0px;"
+              >
+                <div
+                  class="ScrollArea__Content"
+                >
+                  <div
+                    style="width: 400px; height: 200px;"
+                  >
+                    This is the content of test dialog
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div

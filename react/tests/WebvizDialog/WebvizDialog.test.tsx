@@ -143,6 +143,12 @@ describe("WebvizDialog", () => {
             2
         );
 
+        // console.log(component.debug());
+        // expect(component.find(".MuiButton-label")).toHaveLength(2);
+        // expect(component.find(".MuiButton-label").at(0).childAt(0)).toEqual(
+        //     "ok"
+        // );
+
         const okButton = component
             .find(".WebvizDialogActions")
             .children()
@@ -224,6 +230,10 @@ describe("WebvizDialog", () => {
         component.find(".WebvizDialogTitle").simulate("mousedown");
 
         component.find(".WebvizDialogTitle").simulate("mousemove");
+
+        console.log(
+            component.find(".WebvizDialog").first().prop("style")?.width
+        );
     });
 
     test("becomes sticky when scrolling past it and unsticky when scrolling again", () => {
@@ -245,7 +255,7 @@ describe("WebvizDialog", () => {
         const classList = { add: jest.fn(), remove: jest.fn() };
         const getBoundingClientRect = jest.fn();
 
-        const tmp = component.instance() as DOMComponent;
+        // const tmp = component.instance() as DOMComponent;
         // component.instance().containerRef.current = {
         //     getBoundingClientRect,
         //     classList,
@@ -267,10 +277,7 @@ describe("WebvizDialog", () => {
     });
 });
 
-
-links:
-https://stackoverflow.com/questions/45868042/figuring-out-how-to-mock-the-window-size-changing-for-a-react-component-test
-https://www.reddit.com/r/reactjs/comments/buck2k/how_would_you_test_this/
-https://lightrun.com/answers/react-grid-layout-react-draggable-how-to-test-react-draggable-jest--enzyme
-
-
+// links:
+// https://stackoverflow.com/questions/45868042/figuring-out-how-to-mock-the-window-size-changing-for-a-react-component-test
+// https://www.reddit.com/r/reactjs/comments/buck2k/how_would_you_test_this/
+// https://lightrun.com/answers/react-grid-layout-react-draggable-how-to-test-react-draggable-jest--enzyme

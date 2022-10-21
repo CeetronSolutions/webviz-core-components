@@ -268,6 +268,35 @@ export const WebvizDialog: React.FC<WebvizDialogProps> = (props) => {
             initialWidth = dialogRef.current.getBoundingClientRect().width;
             setInitialDialogWidth(initialWidth);
         }
+        // if (initialDialogContentHeight === null) {
+        //     initialContentHeight =
+        //         dialogContentRef.current.getBoundingClientRect().height;
+        //     setInitialDialogContentHeight(initialContentHeight);
+        // }
+
+        // const wantedDialogHeight = Math.max(
+        //     props.minHeight || 0,
+        //     Math.min(window.innerHeight / 2, initialSize.height)
+        // );
+        // const useScrollArea =
+        //     initialContentHeight >= minScrollAreaHeight &&
+        //     margin.top + margin.bottom + initialSize.height >
+        //         window.innerHeight / 2;
+        // const dialogContentHeight = Math.max(
+        //     useScrollArea ? minScrollAreaHeight : 0,
+        //     wantedDialogHeight -
+        //         2 * dialogContentPadding -
+        //         dialogTitleRef.current.getBoundingClientRect().height -
+        //         dialogActionsRef.current.getBoundingClientRect().height
+        // );
+        // setDialogContentHeight(dialogContentHeight);
+        // setUseScrollArea(useScrollArea);
+
+        // const adjustedDialogHeight =
+        //     dialogContentHeight +
+        //     2 * dialogContentPadding +
+        //     dialogTitleRef.current.getBoundingClientRect().height +
+        //     dialogActionsRef.current.getBoundingClientRect().height;
 
         const top = Math.max(
             margin.top,

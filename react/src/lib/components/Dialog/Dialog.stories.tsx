@@ -28,7 +28,11 @@ const Template: ComponentStory<typeof Dialog> = (args: DialogProps) => {
                 {...other}
                 open={dialogOpen}
                 setProps={(newProps) => setDialogOpen(newProps.open)}
-            />
+            >
+                {other.backdrop
+                    ? "This is a short body text"
+                    : "This is a modal dialog. Closes when clicking on backdrop. And this text is very long to verify maxHeight of the component which is hopefully finished within the next hundreds of weeks since I'm a bit tired of only working on this"}
+            </Dialog>
         </>
     );
 };
@@ -37,6 +41,7 @@ export const Basic = Template.bind({});
 Basic.args = {
     id: "Dialog",
     title: "My Dialog",
+    // backdrop: Dialog.defaultProps?.backdrop || false,
     open: Dialog.defaultProps?.open || false,
     max_width: Dialog.defaultProps?.max_width || "md",
     full_screen: Dialog.defaultProps?.full_screen || false,
