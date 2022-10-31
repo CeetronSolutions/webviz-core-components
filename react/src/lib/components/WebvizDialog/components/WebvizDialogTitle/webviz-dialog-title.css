@@ -1,5 +1,4 @@
 .WebvizDialogTitle {
-    flex-grow: 1;
     display: flex;
     cursor: move;
     padding: 16px;
