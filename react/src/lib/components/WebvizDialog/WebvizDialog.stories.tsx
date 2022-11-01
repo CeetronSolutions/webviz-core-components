@@ -11,27 +11,11 @@ export default {
     argTypes: { actions: { control: "array" } },
 } as ComponentMeta<typeof WebvizDialog>;
 
-// const Template: ComponentStory<typeof WebvizDialog> = (
-//     args: WebvizDialogProps
-// ) => {
-//     const { ...other } = args;
-//     return (
-//         <>
-//             <Button variant="outlined">{`Open ${other.id}`}</Button>
-//             <WebvizDialog {...other} open={true}>
-//                 {other.modal
-//                     ? "This is a modal dialog. Closes when clicking on backdrop"
-//                     : "This is non-modal dialog"}
-//             </WebvizDialog>
-//         </>
-//     );
-// };
-
 const Template: ComponentStory<typeof WebvizDialog> = (
     args: WebvizDialogProps
 ) => {
     const { ...other } = args;
-    const [dialogOpen, setDialogOpen] = React.useState<boolean>(true);
+    const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
 
     return (
         <>
@@ -44,18 +28,16 @@ const Template: ComponentStory<typeof WebvizDialog> = (
                 open={dialogOpen}
                 setProps={(newProps) => setDialogOpen(newProps.open)}
             >
-                {other.modal
-                    ? "This is a modal dialog. Closes when clicking on backdrop. And this text is very long to verify maxHeight of the component which is hopefully finished within the next hundreds of weeks since I'm a bit tired of only working on this"
-                    : "This is non-modal dialog"}
-                {/* {other.modal ? (
+                {other.modal ? (
                     <div style={{ width: 400, height: 200 }}>
-                        This is the content of the first dialog
+                        This is the content of the modal dialog. Closes when
+                        clicking on backdrop.
                     </div>
                 ) : (
                     <div style={{ width: 400, height: 600 }}>
-                        This is the content of the first dialog
+                        This is the content of the non-modal dialog
                     </div>
-                )} */}
+                )}
             </WebvizDialog>
         </>
     );

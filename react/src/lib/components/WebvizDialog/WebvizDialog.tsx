@@ -548,7 +548,6 @@ export const WebvizDialog: React.FC<WebvizDialogProps> = (props) => {
                     setDialogLeft(newDialogLeft);
                 }
             }
-
             previousWindowWidth = windowWidth;
         };
 
