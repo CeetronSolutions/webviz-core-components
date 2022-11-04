@@ -1,12 +1,25 @@
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
+import toJson from "enzyme-to-json";
 import { render } from "@testing-library/react";
-import { afterEach, describe, expect, test, jest } from "@jest/globals";
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    test,
+    jest,
+} from "@jest/globals";
 // import "@testing-library/jest-dom";
 
 import { WebvizRenderer } from "../../src/lib/components/WebvizDialog/components/WebvizRenderer";
 import { WebvizDialog } from "../../src/lib";
 import { WebvizDialogParentProps } from "../../src/lib/components/WebvizDialog/WebvizDialog";
+
+// import { JSDOM } from "jsdom";
+// const dom = new JSDOM("<!doctype html><html><body></body></html>");
+// global.window = dom.window;
+// global.document = dom.window.document;
 
 let parentProps: WebvizDialogParentProps = {
     open: false,
@@ -28,6 +41,16 @@ const clearParentProps = () => {
 const setProps = (props: WebvizDialogParentProps): void => {
     parentProps = { ...props };
 };
+
+// const DialogRef = React.forwardRef((props, ref) => {
+//     const dialog = React.useRef<WebvizDialog>(null);
+
+//     return (
+//         <div ref={ref}>
+//             <WebvizDialog {...props} />
+//         </div>
+//     );
+// });
 
 const nonModalWebvizDialog = (
     contentWidth: number,
@@ -71,11 +94,16 @@ const modalWebvizDialog = (
     );
 };
 
-let eventMap;
-let realAddEventListener;
-let realRemoveEventListener;
+// NOTE: document.createElement("div") -> mock to global.document.createElement("div");
 
 describe("WebvizDialog", () => {
+    // add a div with #modal-root id to the global body
+    // const modalRoot = global.document.createElement("div");
+    // modalRoot.setAttribute("id", "WebvizDialog__root");
+    // const body = global.document.querySelector("body");
+    // console.log(body);
+    // body && body.appendChild(modalRoot);
+
     afterEach(() => {
         clearParentProps();
     });
@@ -83,11 +111,17 @@ describe("WebvizDialog", () => {
     test("Render single non-modal dialog Snapshot", () => {
         const contentWidth = 400;
         const contentHeight = 200;
-        const { baseElement } = render(
+        // const { baseElement } = render(
+        //     nonModalWebvizDialog(contentWidth, contentHeight)
+        // );
+        // expect(baseElement).toMatchSnapshot();
+
+        const wrapper = mount(
             nonModalWebvizDialog(contentWidth, contentHeight)
         );
+        expect(toJson(wrapper)).toMatchSnapshot();
 
-        expect(baseElement).toMatchSnapshot();
+        wrapper.unmount();
     });
 
     test("Render single non-modal dialog", () => {
@@ -203,78 +237,175 @@ describe("WebvizDialog", () => {
         component.unmount();
     });
 
-    test("Window Resize", () => {
-        const contentWidth = 200;
-        const contentHeight = 150;
-        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
-
-        const test = component.find(".WebvizDialog").first();
-
-        // Change the viewport to 500px.
-        global.innerWidth = 500;
-
-        // Trigger the window resize event.
-        global.dispatchEvent(new Event("resize"));
-
-        /// ...
-
-        // Run your assertion.
-    });
-
-    test("Dialog drag", () => {
-        const contentWidth = 200;
-        const contentHeight = 150;
-        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
-
-        console.log(component.find(".WebvizDialogTitle").first());
-        component.find(".WebvizDialogTitle").simulate("mousedown");
-
-        component.find(".WebvizDialogTitle").simulate("mousemove");
-
-        console.log(
-            component.find(".WebvizDialog").first().prop("style")?.width
+    test("Test", () => {
+        const component = mount(
+            <WebvizDialog
+                id={"WebvizDialog"}
+                title={"WebvizDialog Title"}
+                open={true}
+                modal={true}
+                heightOwner={"dialog"}
+                height={300}
+                setProps={setProps}
+            >
+                This is the content of test dialog
+            </WebvizDialog>
         );
+
+        const dialogStyle = component.find(".WebvizDialog").at(0).prop("style");
+        expect(dialogStyle).toHaveProperty("width", undefined);
+        expect(dialogStyle).toHaveProperty("height", 300);
+
+        component.unmount();
     });
 
-    test("becomes sticky when scrolling past it and unsticky when scrolling again", () => {
-        realAddEventListener = window.addEventListener;
-        realRemoveEventListener = window.removeEventListener;
-        eventMap = {};
-
-        window.addEventListener = jest.fn((eventName, callback) => {
-            eventMap[eventName] = callback;
-        });
-
-        window.removeEventListener = jest.fn((eventName) => {
-            delete eventMap[eventName];
-        });
-
-        const contentWidth = 200;
-        const contentHeight = 150;
-        const component = mount(modalWebvizDialog(contentWidth, contentHeight));
-        const classList = { add: jest.fn(), remove: jest.fn() };
-        const getBoundingClientRect = jest.fn();
-
-        // const tmp = component.instance() as DOMComponent;
-        // component.instance().containerRef.current = {
-        //     getBoundingClientRect,
-        //     classList,
-        // };
-
-        getBoundingClientRect.mockReturnValueOnce({ top: 0 });
-        eventMap.scroll();
-
-        expect(classList.add).toHaveBeenCalledWith("sticky");
-        expect(classList.remove).not.toHaveBeenCalled();
-
-        getBoundingClientRect.mockReturnValueOnce({ top: 5 });
-        eventMap.scroll();
-
-        expect(classList.remove).toHaveBeenCalledWith("sticky");
-
-        window.addEventListener = realAddEventListener;
-        window.removeEventListener = realRemoveEventListener;
+    test("Test2", () => {
+        console.log(global.document.body.innerHTML);
+        const { container } = render(
+            <WebvizDialog
+                id={"WebvizDialog"}
+                title={"WebvizDialog Title"}
+                open={true}
+                modal={true}
+                heightOwner={"dialog"}
+                height={300}
+                setProps={setProps}
+            >
+                This is the content of test dialog
+            </WebvizDialog>
+        );
+        console.log(global.document.body.innerHTML);
+        console.log(global.innerWidth);
+        console.log(global.innerHeight);
     });
+
+    // test("Window Resize", () => {
+    //     // Element.prototype.appendChild = jest
+    //     //     .fn()
+    //     //     .mockImplementation((element: T) => {
+    //     //         // add a div with #modal-root id to the global body
+    //     //         const modalRoot = global.document.createElement("div");
+    //     //         modalRoot.setAttribute("id", element.id);
+    //     //     });
+    //     console.log(global.document.body.innerHTML);
+    //     const component = mount(
+    //         <WebvizDialog
+    //             id={"WebvizDialog"}
+    //             title={"WebvizDialog Title"}
+    //             open={true}
+    //             modal={true}
+    //             heightOwner={"dialog"}
+    //             height={300}
+    //             minWidth={200}
+    //             maxWidth={400}
+    //             setProps={setProps}
+    //         >
+    //             This is the content of test dialog
+    //         </WebvizDialog>
+    //     );
+    //     console.log(global.document.body.innerHTML);
+
+    //     // console.log(document.getElementById("DialogWrapper")?.innerHTML);
+    //     component.find("#DialogWrapper").getWrappingComponent;
+
+    //     // expect(refSpyOn).toHaveBeenCalledTimes(1);
+    //     const dialog = component.find(".WebvizDialog").at(0);
+
+    //     console.log(
+    //         // (dialog.getDOMNode() as HTMLElement).getBoundingClientRect().width
+    //         dialog.getElement().props.style.width
+    //     );
+
+    //     // console.log(`Dialog left: ${component.state("dialogLeft")}`);
+
+    //     const dialogStyle = component.find(".WebvizDialog").at(0).prop("style");
+    //     console.log(dialogStyle);
+    //     expect(dialogStyle).toHaveProperty("width", 400);
+    //     expect(dialogStyle).toHaveProperty("height", 300);
+
+    //     // Change the viewport to 500px.
+    //     // global.innerWidth = 300;
+
+    //     // Trigger the window resize event.
+    //     // global.dispatchEvent(new Event("resize"));
+
+    //     global.window.innerWidth = 300;
+    //     global.window.dispatchEvent(new Event("resize"));
+
+    //     /// ...
+
+    //     // Run your assertion.
+
+    //     component.update();
+
+    //     const dialogStyle2 = component
+    //         .find(".WebvizDialog")
+    //         .at(0)
+    //         .prop("style");
+    //     console.log(dialogStyle2);
+
+    //     console.log(global.innerHeight);
+    //     console.log(global.innerWidth);
+
+    //     // console.log(global.document.querySelector("body")?.innerHTML);
+
+    //     component.unmount();
+    // });
+
+    // test("Dialog drag", () => {
+    //     const contentWidth = 200;
+    //     const contentHeight = 150;
+    //     const component = mount(modalWebvizDialog(contentWidth, contentHeight));
+
+    //     console.log(component.find(".WebvizDialogTitle").first());
+    //     component.find(".WebvizDialogTitle").simulate("mousedown");
+
+    //     component.find(".WebvizDialogTitle").simulate("mousemove");
+
+    //     console.log(
+    //         component.find(".WebvizDialog").first().prop("style")?.width
+    //     );
+    // });
+
+    // test("becomes sticky when scrolling past it and unsticky when scrolling again", () => {
+    //     realAddEventListener = window.addEventListener;
+    //     realRemoveEventListener = window.removeEventListener;
+    //     eventMap = {};
+
+    //     window.addEventListener = jest.fn((eventName, callback) => {
+    //         eventMap[eventName] = callback;
+    //     });
+
+    //     window.removeEventListener = jest.fn((eventName) => {
+    //         delete eventMap[eventName];
+    //     });
+
+    //     const contentWidth = 200;
+    //     const contentHeight = 150;
+    //     const component = mount(modalWebvizDialog(contentWidth, contentHeight));
+    //     const classList = { add: jest.fn(), remove: jest.fn() };
+    //     const getBoundingClientRect = jest.fn();
+
+    //     // const tmp = component.instance() as DOMComponent;
+    //     // component.instance().containerRef.current = {
+    //     //     getBoundingClientRect,
+    //     //     classList,
+    //     // };
+
+    //     getBoundingClientRect.mockReturnValueOnce({ top: 0 });
+    //     eventMap.scroll();
+
+    //     expect(classList.add).toHaveBeenCalledWith("sticky");
+    //     expect(classList.remove).not.toHaveBeenCalled();
+
+    //     getBoundingClientRect.mockReturnValueOnce({ top: 5 });
+    //     eventMap.scroll();
+
+    //     expect(classList.remove).toHaveBeenCalledWith("sticky");
+
+    //     window.addEventListener = realAddEventListener;
+    //     window.removeEventListener = realRemoveEventListener;
+    // });
 });
 
 // links:

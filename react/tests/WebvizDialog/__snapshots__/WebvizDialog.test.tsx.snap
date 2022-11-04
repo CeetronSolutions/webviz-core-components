@@ -1,99 +1,393 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`WebvizDialog Render single non-modal dialog Snapshot 1`] = `
-<body>
-  <div />
-  <div
-    id="WebvizDialog__root"
-  >
-    <div>
+<Component
+  actions={Array []}
+  disableDraggable={false}
+  disableEscapeKeyDown={false}
+  id="WebvizDialog"
+  minWidth={200}
+  modal={false}
+  open={true}
+  setProps={[Function]}
+  title="WebvizDialog Title"
+>
+  <WebvizRenderer
+    open={true}
+    target={
       <div
-        aria-label="WebvizRenderer"
-        style="display: block;"
+        class="WebvizDialogPlaceholder"
+        style="z-index: 1051;"
       >
         <div
-          class="WebvizDialog WebvizDialog--active"
-          id="WebvizDialog"
-          style="left: 512px; top: 284px; min-width: 200px; min-height: 200px; height: 200px;"
+          aria-label="WebvizRenderer"
+          style="display: block;"
         >
           <div
-            class="WebvizDialogTitle"
-          >
-            <div>
-              WebvizDialog Title
-            </div>
-            <div>
-              <button
-                aria-label="close"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="Icon__StyledSvg-sc-6evbi1-0"
-                    fill="currentColor"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    width="24px"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      class="Icon__StyledPath-sc-6evbi1-1"
-                      clip-rule="evenodd"
-                      d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
-                      data-testid="eds-icon-path"
-                      fill-rule="evenodd"
-                      height="24"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="WebvizDialogContent"
-            style="height: 168px;"
+            class="WebvizDialog WebvizDialog--active"
+            id="WebvizDialog"
+            style="left: 512px; top: 384px; min-width: 200px;"
           >
             <div
-              class="ScrollArea"
+              class="WebvizDialogTitle"
+              style="height: 80px;"
             >
-              <div
-                class="ScrollBar VerticalScrollBar ScrollBar--inactive"
-                style="display: none; top: 0px; height: 0px;"
-              />
-              <div
-                class="ScrollBar HorizontalScrollBar ScrollBar--inactive"
-                style="display: none; left: 0px; width: 0px;"
-              />
-              <div
-                class="ScrollAreaInner"
-                style="padding-right: 0px; padding-bottom: 0px;"
-              >
-                <div
-                  class="ScrollArea__Content"
+              <div>
+                WebvizDialog Title
+              </div>
+              <div>
+                <button
+                  aria-label="close"
+                  class="MuiButtonBase-root MuiIconButton-root"
+                  tabindex="0"
+                  type="button"
                 >
-                  <div
-                    style="width: 400px; height: 200px;"
+                  <span
+                    class="MuiIconButton-label"
                   >
-                    This is the content of test dialog
-                  </div>
-                </div>
+                    <svg
+                      aria-hidden="true"
+                      class="Icon__StyledSvg-sc-6evbi1-0"
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        class="Icon__StyledPath-sc-6evbi1-1"
+                        clip-rule="evenodd"
+                        d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                        data-testid="eds-icon-path"
+                        fill-rule="evenodd"
+                        height="24"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
             </div>
+            <div
+              class="WebvizDialogContent"
+            >
+              <div
+                style="width: 400px; height: 200px;"
+              >
+                This is the content of test dialog
+              </div>
+            </div>
+            <div
+              class="WebvizDialogActions"
+              style="height: 0px;"
+            />
           </div>
-          <div
-            class="WebvizDialogActions"
-          />
         </div>
       </div>
-    </div>
-  </div>
-</body>
+    }
+  >
+    <Portal
+      containerInfo={
+        <div
+          class="WebvizDialogPlaceholder"
+          style="z-index: 1051;"
+        >
+          <div
+            aria-label="WebvizRenderer"
+            style="display: block;"
+          >
+            <div
+              class="WebvizDialog WebvizDialog--active"
+              id="WebvizDialog"
+              style="left: 512px; top: 384px; min-width: 200px;"
+            >
+              <div
+                class="WebvizDialogTitle"
+                style="height: 80px;"
+              >
+                <div>
+                  WebvizDialog Title
+                </div>
+                <div>
+                  <button
+                    aria-label="close"
+                    class="MuiButtonBase-root MuiIconButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="Icon__StyledSvg-sc-6evbi1-0"
+                        fill="currentColor"
+                        height="24px"
+                        viewBox="0 0 24 24"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          class="Icon__StyledPath-sc-6evbi1-1"
+                          clip-rule="evenodd"
+                          d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                          data-testid="eds-icon-path"
+                          fill-rule="evenodd"
+                          height="24"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="WebvizDialogContent"
+              >
+                <div
+                  style="width: 400px; height: 200px;"
+                >
+                  This is the content of test dialog
+                </div>
+              </div>
+              <div
+                class="WebvizDialogActions"
+                style="height: 0px;"
+              />
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <div
+        aria-label="WebvizRenderer"
+        style={
+          Object {
+            "display": "block",
+          }
+        }
+      >
+        <div
+          className="WebvizDialog WebvizDialog--active"
+          id="WebvizDialog"
+          onMouseDown={[Function]}
+          style={
+            Object {
+              "height": undefined,
+              "left": 512,
+              "minWidth": 200,
+              "top": 384,
+              "width": undefined,
+            }
+          }
+        >
+          <WebvizDialogTitle
+            height={80}
+            onClose={[Function]}
+            title="WebvizDialog Title"
+          >
+            <div
+              className="WebvizDialogTitle"
+              style={
+                Object {
+                  "height": 80,
+                }
+              }
+            >
+              <div>
+                WebvizDialog Title
+              </div>
+              <div>
+                <WithStyles(ForwardRef(IconButton))
+                  aria-label="close"
+                  onClick={[Function]}
+                >
+                  <ForwardRef(IconButton)
+                    aria-label="close"
+                    classes={
+                      Object {
+                        "colorInherit": "MuiIconButton-colorInherit",
+                        "colorPrimary": "MuiIconButton-colorPrimary",
+                        "colorSecondary": "MuiIconButton-colorSecondary",
+                        "disabled": "Mui-disabled",
+                        "edgeEnd": "MuiIconButton-edgeEnd",
+                        "edgeStart": "MuiIconButton-edgeStart",
+                        "label": "MuiIconButton-label",
+                        "root": "MuiIconButton-root",
+                        "sizeSmall": "MuiIconButton-sizeSmall",
+                      }
+                    }
+                    onClick={[Function]}
+                  >
+                    <WithStyles(ForwardRef(ButtonBase))
+                      aria-label="close"
+                      centerRipple={true}
+                      className="MuiIconButton-root"
+                      disabled={false}
+                      focusRipple={true}
+                      onClick={[Function]}
+                    >
+                      <ForwardRef(ButtonBase)
+                        aria-label="close"
+                        centerRipple={true}
+                        className="MuiIconButton-root"
+                        classes={
+                          Object {
+                            "disabled": "Mui-disabled",
+                            "focusVisible": "Mui-focusVisible",
+                            "root": "MuiButtonBase-root",
+                          }
+                        }
+                        disabled={false}
+                        focusRipple={true}
+                        onClick={[Function]}
+                      >
+                        <button
+                          aria-label="close"
+                          className="MuiButtonBase-root MuiIconButton-root"
+                          disabled={false}
+                          onBlur={[Function]}
+                          onClick={[Function]}
+                          onDragLeave={[Function]}
+                          onFocus={[Function]}
+                          onKeyDown={[Function]}
+                          onKeyUp={[Function]}
+                          onMouseDown={[Function]}
+                          onMouseLeave={[Function]}
+                          onMouseUp={[Function]}
+                          onTouchEnd={[Function]}
+                          onTouchMove={[Function]}
+                          onTouchStart={[Function]}
+                          tabIndex={0}
+                          type="button"
+                        >
+                          <span
+                            className="MuiIconButton-label"
+                          >
+                            <ForwardRef(Icon)
+                              name="close"
+                            >
+                              <Icon__StyledSvg
+                                aria-hidden={true}
+                                fill="currentColor"
+                                height={24}
+                                name="close"
+                                title={null}
+                                viewBox="0 0 24 24"
+                                width={24}
+                              >
+                                <svg
+                                  aria-hidden={true}
+                                  className="Icon__StyledSvg-sc-6evbi1-0"
+                                  fill="currentColor"
+                                  height="24px"
+                                  name={null}
+                                  title={null}
+                                  viewBox="0 0 24 24"
+                                  width="24px"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <Icon__StyledPath
+                                    d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                                    data-testid="eds-icon-path"
+                                    height="24"
+                                    size={24}
+                                  >
+                                    <path
+                                      className="Icon__StyledPath-sc-6evbi1-1"
+                                      clipRule="evenodd"
+                                      d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                                      data-testid="eds-icon-path"
+                                      fillRule="evenodd"
+                                      height="24"
+                                      size={null}
+                                      transform={null}
+                                    />
+                                  </Icon__StyledPath>
+                                </svg>
+                              </Icon__StyledSvg>
+                            </ForwardRef(Icon)>
+                          </span>
+                          <WithStyles(memo)
+                            center={true}
+                          >
+                            <ForwardRef(TouchRipple)
+                              center={true}
+                              classes={
+                                Object {
+                                  "child": "MuiTouchRipple-child",
+                                  "childLeaving": "MuiTouchRipple-childLeaving",
+                                  "childPulsate": "MuiTouchRipple-childPulsate",
+                                  "ripple": "MuiTouchRipple-ripple",
+                                  "ripplePulsate": "MuiTouchRipple-ripplePulsate",
+                                  "rippleVisible": "MuiTouchRipple-rippleVisible",
+                                  "root": "MuiTouchRipple-root",
+                                }
+                              }
+                            >
+                              <span
+                                className="MuiTouchRipple-root"
+                              >
+                                <TransitionGroup
+                                  childFactory={[Function]}
+                                  component={null}
+                                  exit={true}
+                                />
+                              </span>
+                            </ForwardRef(TouchRipple)>
+                          </WithStyles(memo)>
+                        </button>
+                      </ForwardRef(ButtonBase)>
+                    </WithStyles(ForwardRef(ButtonBase))>
+                  </ForwardRef(IconButton)>
+                </WithStyles(ForwardRef(IconButton))>
+              </div>
+            </div>
+          </WebvizDialogTitle>
+          <WebvizDialogContent
+            useScrollArea={false}
+          >
+            <div
+              className="WebvizDialogContent"
+              style={
+                Object {
+                  "height": undefined,
+                }
+              }
+            >
+              <div
+                style={
+                  Object {
+                    "height": 200,
+                    "width": 400,
+                  }
+                }
+              >
+                This is the content of test dialog
+              </div>
+            </div>
+          </WebvizDialogContent>
+          <WebvizDialogActions
+            actions={Array []}
+            height={70}
+            onActionClick={[Function]}
+          >
+            <div
+              className="WebvizDialogActions"
+              style={
+                Object {
+                  "height": 0,
+                }
+              }
+            />
+          </WebvizDialogActions>
+        </div>
+      </div>
+    </Portal>
+  </WebvizRenderer>
+</Component>
 `;

@@ -20,5 +20,8 @@ module.exports = {
         "<rootDir>/node_modules/react-addons-test-utils",
         "<rootDir>/EmptyModule.js",
     ],
-    setupFilesAfterEnv: ["<rootDir>/setupTests.js"],
+    setupFilesAfterEnv: [
+        // "<rootDir>/jest.jsdomSetup.js",
+        "<rootDir>/setupTests.js",
+    ],
 };

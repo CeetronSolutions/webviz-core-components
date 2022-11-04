@@ -432,14 +432,28 @@ export const WebvizDialog: React.FC<WebvizDialogProps> = (props) => {
         let previousWindowHeight = window.innerHeight;
 
         const handleWindowWidthResize = () => {
+            console.log("Window width resize called!");
             if (!open || !dialogRef.current || initialDialogWidth === null) {
                 return;
             }
+
+            console.log("Window width resize after early return!");
+            console.log(window.innerWidth);
 
             const dialogLeft = dialogRef.current.getBoundingClientRect().left;
             const dialogWidth = dialogRef.current.getBoundingClientRect().width;
             const windowWidth = window.innerWidth;
             const deltaWidth = windowWidth - previousWindowWidth;
+
+            console.log(dialogRef.current.getBoundingClientRect());
+            console.log("All rects:");
+            const allRects = dialogRef.current.getClientRects();
+            Array(allRects).forEach((rect) => {
+                console.log(rect);
+            });
+
+            console.log(dialogLeft);
+            console.log(dialogWidth);
 
             const wasDialogOutsideWindow =
                 dialogLeft < 0 ||
@@ -492,6 +506,8 @@ export const WebvizDialog: React.FC<WebvizDialogProps> = (props) => {
                 if (newDialogLeft !== dialogLeft) {
                     setDialogLeft(newDialogLeft);
                 }
+
+                console.log(dialogLeft);
 
                 const remainingDelta =
                     deltaWidth + (dialogLeft - newDialogLeft);
