@@ -37,5 +37,9 @@ class Selectors(html.Details):
             self.id = kwargs["id"]
         self.children = [
             html.Summary(children=label, className="webviz-underlined-label"),
-            html.Div(className="webviz-selectors-content",style={"padding": "10px"}, children=children),
+            html.Div(
+                className="webviz-selectors-content",
+                style={"padding": "10px"},
+                children=children,
+            ),
         ]
