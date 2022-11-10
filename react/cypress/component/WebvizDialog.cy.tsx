@@ -1,7 +1,4 @@
 import React from "react";
-// import { Component } from "react";
-
-import { mount } from "@cypress/react";
 
 // import { EdsIcon } from "../../src/lib";
 // import { SmartNodeSelector } from "../../src/lib/components/SmartNodeSelector";
@@ -63,10 +60,10 @@ const dialogTestContent = (
 
 describe("WebvizDialog", () => {
     it("renders", () => {
-        const wrapper = mount(nonModalWebvizDialog(dialogTestContent()));
-        // mount(<EdsIcon icon={"star"} />);
-        // mount(<SmartNodeSelector data={[]} id={"TestId"} />);
-        // mount(<Backdrop opacity={1} />);
-        // wrapper.should("exist");
+        const wrapper = cy.mount(nonModalWebvizDialog(dialogTestContent()));
+        // const wrapper = cy.mount(<EdsIcon icon={"star"} />);
+        // const wrapper = cy.mount(<SmartNodeSelector data={[]} id={"TestId"} />);
+        // const wrapper = mount(<Backdrop opacity={1} />);
+        wrapper.should("exist");
     });
 });

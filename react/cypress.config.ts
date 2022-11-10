@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import webpackConfig from "./webpack.config";
 
 export default defineConfig({
     // These settings apply everywhere unless overridden
@@ -11,6 +12,7 @@ export default defineConfig({
         devServer: {
             framework: "react",
             bundler: "webpack",
+            webpackConfig,
         },
         specPattern: "cypress/**/*.cy.{js,jsx,ts,tsx}",
     },
