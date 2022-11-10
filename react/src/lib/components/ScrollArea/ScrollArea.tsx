@@ -464,3 +464,5 @@ ScrollArea.propTypes = {
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     noScrollbarPadding: PropTypes.bool,
 };
+
+ScrollArea.displayName = "ScrollArea";
