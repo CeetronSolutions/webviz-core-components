@@ -1,18 +1,13 @@
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-
 const packagejson = require("./package.json");
-
 const dashLibraryName = packagejson.name
     .replace(/[-\/]/g, "_")
     .replace(/@/g, "");
-
 module.exports = (env, argv) => {
     const overrides = module.exports || {};
-
     // Mode
-
     let mode;
     if (argv && argv.mode) {
         mode = argv.mode;
@@ -21,30 +16,20 @@ module.exports = (env, argv) => {
     } else {
         mode = "production";
     }
-
     // Entry
-
     const entry = {
-        main: argv && argv.entry ? argv.entry : "./dist/index.js",
+        main: argv?.entry ?? "./dist/index.js",
     };
-
     // Output
-
     const demo = entry.main != "./dist/index.js";
-
     const filenameJs = demo
         ? "output.js"
         : `${dashLibraryName}.${mode === "development" ? "dev" : "min"}.js`;
-
     const filenameCss = demo ? "output.css" : `${dashLibraryName}.css`;
-
     // Devtool
-
     const devtool =
         argv?.devtool || (mode === "development" ? "eval-source-map" : false);
-
     // Externals
-
     const externals = demo
         ? undefined
         : {
@@ -52,10 +37,8 @@ module.exports = (env, argv) => {
               "react-dom": "ReactDOM",
               "plotly.js": "Plotly",
           };
-
     // NOTE: Keep order of the following configuration output
     // See: https://webpack.js.org/configuration/
-
     return {
         mode: mode,
         entry,
