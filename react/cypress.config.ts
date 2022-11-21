@@ -6,7 +6,10 @@ export default defineConfig({
         devServer: {
             framework: "react",
             bundler: "webpack",
-            webpackConfig: webpackConfig,
+            webpackConfig: webpackConfig(undefined, {
+                mode: "development",
+                entry: "./src/demo/index.tsx",
+            }),
         },
     },
 });

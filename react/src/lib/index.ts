@@ -11,11 +11,13 @@ import { Select } from "./components/Select";
 import {
     SmartNodeSelector,
     TreeData,
+    TreeNodeSelection,
+    SmartNodeSelectorComponent,
+} from "./components/SmartNodeSelector";
+import type {
     TreeDataNode,
     TreeDataNodeMetaData,
-    TreeNodeSelection,
     SmartNodeSelectorPropsType,
-    SmartNodeSelectorComponent,
 } from "./components/SmartNodeSelector";
 import { Menu } from "./components/Menu";
 import { Overlay } from "./components/Overlay";

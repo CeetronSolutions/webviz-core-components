@@ -7,8 +7,11 @@
 
 import TreeData, { MatchType } from "./utils/TreeData";
 import TreeNodeSelection from "./utils/TreeNodeSelection";
-import { TreeDataNode, TreeDataNodeMetaData } from "./utils/TreeDataNodeTypes";
-import { SmartNodeSelectorPropsType } from "./components/SmartNodeSelectorComponent";
+import type {
+    TreeDataNode,
+    TreeDataNodeMetaData,
+} from "./utils/TreeDataNodeTypes";
+import type { SmartNodeSelectorPropsType } from "./components/SmartNodeSelectorComponent";
 import SmartNodeSelectorComponent from "./components/SmartNodeSelectorComponent";
 
 export { SmartNodeSelector } from "./SmartNodeSelector";

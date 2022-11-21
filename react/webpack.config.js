@@ -105,7 +105,7 @@ module.exports = (env, argv) => {
             extensions: [".ts", ".tsx", ".js", ".jsx"],
         },
         devtool: devtool,
-        externals: undefined, // externals,
+        externals: externals,
         plugins: [
             new MiniCssExtractPlugin({
                 filename: filenameCss,

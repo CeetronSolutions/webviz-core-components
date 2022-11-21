@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export interface TreeDataNode {
+export type TreeDataNode = {
     id?: string;
     name: string;
     description?: string;
     color?: string;
     icon?: string;
     children?: Array<TreeDataNode>;
-}
+};
 
-export interface TreeDataNodeMetaData {
+export type TreeDataNodeMetaData = {
     id?: string;
     description?: string;
     color?: string;
     icon?: string;
     numChildren: number;
-}
+};
