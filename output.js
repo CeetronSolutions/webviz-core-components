@@ -76853,501 +76853,6 @@ demo_EdsIcon.propTypes = {
 
 
 
-;// ./src/lib/components/NewSmartNodeSelector/ui/VirtualizedList.tsx
-
-const demo_DEFAULT_PROPS = {
-    overscanCount: 3,
-};
-function demo_VirtualizedList(props) {
-    const defaultedProps = Object.assign(Object.assign({}, demo_DEFAULT_PROPS), props);
-    const [scrollTop, setScrollTop] = demo_react.useState(0);
-    const scrollContainerRef = demo_react.useRef(null);
-    const prevSelectedIndexRef = demo_react.useRef(null);
-    const totalHeight = defaultedProps.items.length * defaultedProps.itemHeight;
-    const containerHeight = Math.min(totalHeight, defaultedProps.maxHeight);
-    // Auto-scroll to keep selected item visible
-    demo_react.useEffect(() => {
-        if (defaultedProps.selectedIndex === null ||
-            defaultedProps.selectedIndex === undefined ||
-            !scrollContainerRef.current) {
-            return;
-        }
-        const selectedIndex = defaultedProps.selectedIndex;
-        const prevSelectedIndex = prevSelectedIndexRef.current;
-        prevSelectedIndexRef.current = selectedIndex;
-        const itemTop = selectedIndex * defaultedProps.itemHeight;
-        const itemBottom = itemTop + defaultedProps.itemHeight;
-        const currentScrollTop = scrollContainerRef.current.scrollTop;
-        const visibleTop = currentScrollTop;
-        const visibleBottom = currentScrollTop + containerHeight;
-        // Determine scroll direction
-        const isScrollingDown = prevSelectedIndex === null || selectedIndex > prevSelectedIndex;
-        if (isScrollingDown) {
-            // Scrolling down - keep item at bottom of visible area
-            if (itemBottom > visibleBottom) {
-                scrollContainerRef.current.scrollTop =
-                    itemBottom - containerHeight;
-            }
-        }
-        else {
-            // Scrolling up - keep item at top of visible area
-            if (itemTop < visibleTop) {
-                scrollContainerRef.current.scrollTop = itemTop;
-            }
-        }
-    }, [
-        defaultedProps.selectedIndex,
-        defaultedProps.itemHeight,
-        containerHeight,
-    ]);
-    // Calculate visible range
-    const startIndex = Math.max(0, Math.floor(scrollTop / defaultedProps.itemHeight) -
-        (defaultedProps.overscanCount || 2));
-    const endIndex = Math.min(defaultedProps.items.length, Math.ceil((scrollTop + containerHeight) / defaultedProps.itemHeight) +
-        (defaultedProps.overscanCount || 2));
-    const handleScroll = demo_react.useCallback(function handleScroll(e) {
-        setScrollTop(e.currentTarget.scrollTop);
-    }, []);
-    const visibleItems = defaultedProps.items.slice(startIndex, endIndex);
-    return (demo_react.createElement("div", { ref: scrollContainerRef, onScroll: handleScroll, style: {
-            overflowY: "auto",
-            height: containerHeight,
-            position: "relative",
-        } },
-        demo_react.createElement("div", { style: { height: totalHeight, position: "relative" } }, visibleItems.map((item, index) => {
-            const itemIndex = startIndex + index;
-            return (demo_react.createElement("div", { key: itemIndex, tabIndex: 0, style: {
-                    position: "absolute",
-                    top: itemIndex * defaultedProps.itemHeight,
-                    height: defaultedProps.itemHeight,
-                    maxHeight: defaultedProps.itemHeight,
-                    overflowY: "hidden",
-                    width: "100%",
-                    boxSizing: "border-box",
-                }, onClick: () => { var _a; return (_a = defaultedProps.onItemClick) === null || _a === void 0 ? void 0 : _a.call(defaultedProps, item, itemIndex); } },
-                demo_react.createElement(demo_react.Fragment, { key: itemIndex }, defaultedProps.renderItem(item, itemIndex === defaultedProps.selectedIndex))));
-        }))));
-}
-
-;// ./src/lib/components/NewSmartNodeSelector/completion-adapters/simple/SimpleCompletionsComponent.tsx
-
-
-function demo_SimpleCompletionsComponent(props) {
-    var _a, _b;
-    const nodeCompletions = demo_react.useMemo(() => {
-        return props.completions.filter((comp) => comp.kind === "node");
-    }, [props.completions]);
-    const insideGroup = (_b = (_a = props.caretContext) === null || _a === void 0 ? void 0 : _a.insideGroup) !== null && _b !== void 0 ? _b : false;
-    return (demo_react.createElement(demo_react.Fragment, null,
-        demo_react.createElement("ul", { style: {
-                borderBottom: "1px solid #ccc",
-                marginBottom: 4,
-                padding: "2px 8px",
-            } }, insideGroup ? (demo_react.createElement(demo_react.Fragment, null,
-            demo_react.createElement("li", { className: "suggestion-item", style: {
-                    padding: "8px 12px",
-                    cursor: "pointer",
-                    backgroundColor: props.selectedIndex === -2
-                        ? "#e6f0ff"
-                        : "transparent",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1em",
-                }, onClick: () => props.onSelectCompletion(-2) },
-                demo_react.createElement("div", { style: { fontWeight: 800 } }, "Toggle Union"),
-                demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, "Toggle union match")),
-            demo_react.createElement("li", { className: "suggestion-item", style: {
-                    padding: "8px 12px",
-                    cursor: "pointer",
-                    backgroundColor: props.selectedIndex === -1
-                        ? "#e6f0ff"
-                        : "transparent",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1em",
-                }, onClick: () => props.onSelectCompletion(-1) },
-                demo_react.createElement("div", { style: { fontWeight: 800 } }, "Close group"),
-                demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, "Close the current group")))) : (demo_react.createElement("li", { className: "suggestion-item", style: {
-                padding: "8px 12px",
-                cursor: "pointer",
-                backgroundColor: props.selectedIndex === -1
-                    ? "#e6f0ff"
-                    : "transparent",
-                display: "flex",
-                alignItems: "center",
-                gap: "1em",
-            }, onClick: () => props.onSelectCompletion(-1) },
-            demo_react.createElement("div", { style: { fontWeight: 800 } }, "Start a group"),
-            demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, "Create a new group to match multiple nodes")))),
-        demo_react.createElement("div", { style: { padding: 4, overflow: "auto" } },
-            demo_react.createElement(demo_VirtualizedList, { items: nodeCompletions, itemHeight: 48, maxHeight: Math.min(props.maxContainerHeight - 24, 48 * 10), renderItem: demo_renderNodeCompletionItem, onItemClick: (_, index) => props.onSelectCompletion(index), selectedIndex: props.selectedIndex })),
-        nodeCompletions.length === 0 && (demo_react.createElement("div", { style: {
-                padding: "8px 12px",
-                color: "#666",
-                fontStyle: "italic",
-            } }, "No completions"))));
-}
-function demo_renderNodeCompletionItem(completion, isSelected) {
-    let label = completion.insertText;
-    let detail = null;
-    if (completion.origin.kind === "single") {
-        const name = completion.origin.node.name;
-        const range = completion.origin.nodeNameRange;
-        const left = name.slice(0, range.start);
-        const mid = name.slice(range.start, range.end);
-        const right = name.slice(range.end);
-        label = (demo_react.createElement(demo_react.Fragment, null,
-            demo_react.createElement("span", { style: { textDecoration: "underline" } }, left),
-            mid,
-            right));
-        detail = completion.origin.node.description;
-    }
-    else if (completion.origin.kind === "multi") {
-        detail = `${completion.origin.count} matching nodes`;
-    }
-    return (demo_react.createElement("li", { className: "suggestion-item", style: {
-            padding: "8px 12px",
-            cursor: "pointer",
-            backgroundColor: isSelected ? "#e6f0ff" : "transparent",
-            display: "flex",
-            alignItems: "center",
-            gap: "1em",
-        } },
-        demo_react.createElement("div", { style: { fontWeight: 800 } }, label),
-        detail && (demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, detail))));
-}
-
-;// ./src/lib/components/NewSmartNodeSelector/completion-adapters/simple/SimpleCompletionsAdapter.ts
-
-class demo_SimpleCompletionsAdapter {
-    constructor() {
-        this.component = demo_SimpleCompletionsComponent;
-    }
-    makeNodeCompletions(completions) {
-        return completions.filter((comp) => comp.kind === "node");
-    }
-    makeSyntaxCompletions(completions) {
-        return completions.filter((comp) => comp.kind !== "node");
-    }
-    selectPrevious(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        if (nodeCompletions.length === 0) {
-            return args.selectedIndex;
-        }
-        if (args.selectedIndex === null) {
-            return null;
-        }
-        else {
-            return Math.max(args.selectedIndex - 1, -1);
-        }
-    }
-    selectNext(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        if (nodeCompletions.length === 0) {
-            return args.selectedIndex;
-        }
-        if (args.selectedIndex === null) {
-            if (nodeCompletions.length > 0) {
-                return 0;
-            }
-            return null;
-        }
-        else {
-            return Math.min(args.selectedIndex + 1, nodeCompletions.length - 1);
-        }
-    }
-    getSelectedCompletion(args) {
-        var _a, _b, _c;
-        if (args.selectedIndex === null) {
-            return null;
-        }
-        const range = args.caretContext
-            ? {
-                start: args.caretContext.caretOffset,
-                end: args.caretContext.caretOffset,
-            }
-            : { start: 0, end: 0 };
-        if ((_a = args.caretContext) === null || _a === void 0 ? void 0 : _a.insideGroup) {
-            if (args.selectedIndex === -2) {
-                const unionCompletion = {
-                    label: "+",
-                    kind: "unionFlag",
-                    insertText: "+",
-                    replaceRange: { start: 0, end: 0 },
-                    segmentReplaceRange: { start: 0, end: 0 },
-                };
-                return unionCompletion;
-            }
-            else if (args.selectedIndex === -1) {
-                const closeGroupCompletion = {
-                    label: ")",
-                    kind: "group",
-                    insertText: ")",
-                    replaceRange: range,
-                    segmentReplaceRange: range,
-                };
-                return closeGroupCompletion;
-            }
-        }
-        else {
-            if (args.selectedIndex === -1) {
-                const openGroupCompletion = {
-                    label: "(",
-                    kind: "group",
-                    insertText: "(",
-                    replaceRange: { start: 0, end: 0 },
-                    segmentReplaceRange: { start: 0, end: 0 },
-                };
-                return openGroupCompletion;
-            }
-        }
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        const syntaxCompletions = this.makeSyntaxCompletions(args.completions);
-        if (args.selectedIndex >= 0) {
-            return (_b = nodeCompletions[args.selectedIndex]) !== null && _b !== void 0 ? _b : null;
-        }
-        else {
-            const syntaxIndex = syntaxCompletions.length + args.selectedIndex;
-            return (_c = syntaxCompletions[syntaxIndex]) !== null && _c !== void 0 ? _c : null;
-        }
-    }
-    hasCompletions(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        return nodeCompletions.length > 0;
-    }
-    transformCompletion(completion, args) {
-        var _a, _b, _c;
-        if (completion.kind === "group" && completion.label === "(") {
-            return {
-                text: completion.label,
-                range: completion.replaceRange,
-            };
-        }
-        else if (completion.kind === "group" && completion.label === ")") {
-            const newRange = Object.assign({}, completion.replaceRange);
-            if (((_b = (_a = args.caretContext) === null || _a === void 0 ? void 0 : _a.tokenAt) === null || _b === void 0 ? void 0 : _b.type) === "OR") {
-                newRange.start -= 1;
-            }
-            return {
-                text: completion.label + args.delimiter,
-                range: newRange,
-            };
-        }
-        if (completion.kind === "node") {
-            const isLeaf = completion.origin.kind === "single" &&
-                completion.origin.node.isLeaf;
-            if (isLeaf) {
-                return {
-                    text: completion.label,
-                    range: completion.replaceRange,
-                };
-            }
-        }
-        let suffix = args.delimiter;
-        if ((_c = args.caretContext) === null || _c === void 0 ? void 0 : _c.insideGroup) {
-            if (completion.kind == "unionFlag") {
-                suffix = "";
-            }
-            else {
-                suffix = "|";
-            }
-        }
-        return {
-            text: completion.label + suffix,
-            range: completion.replaceRange,
-        };
-    }
-}
-
-;// ./src/lib/components/NewSmartNodeSelector/completion-adapters/advanced/AdvancedCompletionComponent.tsx
-
-
-function demo_AdvancedCompletionComponent(props) {
-    const syntaxCompletions = demo_react.useMemo(() => {
-        return props.completions.filter((comp) => comp.kind !== "node");
-    }, [props.completions]);
-    const nodeCompletions = demo_react.useMemo(() => {
-        return props.completions.filter((comp) => comp.kind === "node");
-    }, [props.completions]);
-    return (demo_react.createElement(demo_react.Fragment, null,
-        demo_renderSyntaxCompletionItems(syntaxCompletions, props.onSelectCompletion, props.selectedIndex !== null ? -(props.selectedIndex + 1) : null),
-        demo_react.createElement("div", { style: { padding: 4, overflow: "auto" } },
-            demo_react.createElement(demo_VirtualizedList, { items: nodeCompletions, itemHeight: 48, maxHeight: Math.min(props.maxContainerHeight - 24, 48 * 10), renderItem: demo_AdvancedCompletionComponent_renderNodeCompletionItem, onItemClick: (_, index) => props.onSelectCompletion(index), selectedIndex: props.selectedIndex })),
-        nodeCompletions.length === 0 && syntaxCompletions.length === 0 && (demo_react.createElement("div", { style: {
-                padding: "8px 12px",
-                color: "#666",
-                fontStyle: "italic",
-            } }, "No completions"))));
-}
-function demo_renderSyntaxCompletionItems(completions, onClick, selectedIndex) {
-    function makeTitle(completion) {
-        if (completion.kind === "group") {
-            if (completion.insertText === "(") {
-                return "Open a new group";
-            }
-            else if (completion.insertText === ")") {
-                return "Close the current group";
-            }
-        }
-        else if (completion.kind === "set") {
-            if (completion.insertText === "{") {
-                return "Open a new set for unions";
-            }
-            else if (completion.insertText === "}") {
-                return "Close the current set";
-            }
-        }
-        else if (completion.kind === "unionFlag") {
-            if (completion.insertText === "+") {
-                return "Union flag: create a union of the children of all the matched nodes";
-            }
-        }
-        else if (completion.kind === "wildcard") {
-            if (completion.insertText === "*") {
-                return "Wildcard: matches any single segment";
-            }
-            else if (completion.insertText === "**") {
-                return "Deep wildcard: matches any number of segments";
-            }
-            else if (completion.insertText === "?") {
-                return "Wildcard: matches any single character in a segment";
-            }
-        }
-        else if (completion.kind === "delimiter") {
-            return "Delimiter: use to start new segment";
-        }
-        else if (completion.kind === "operator") {
-            if (completion.insertText === "|") {
-                return "OR operator: matches either side";
-            }
-            else if (completion.insertText === ",") {
-                return "Separator for set items";
-            }
-        }
-        return "";
-    }
-    return (demo_react.createElement("ul", { style: {
-            listStyle: "none",
-            margin: 0,
-            padding: 4,
-            display: "flex",
-            gap: "8px",
-            borderBottom: "1px solid #ccc",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            alignItems: "center",
-        } }, completions.map((completion, index) => (demo_react.createElement("li", { key: index, className: "suggestion-item", style: {
-            padding: "8px 12px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "1em",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            backgroundColor: selectedIndex === index ? "#235de4ff" : "#f5f5f5",
-            color: selectedIndex === index ? "white" : "black",
-        }, title: makeTitle(completion), onClick: () => onClick(-(index + 1)) }, completion.insertText)))));
-}
-function demo_AdvancedCompletionComponent_renderNodeCompletionItem(completion, isSelected) {
-    let label = completion.insertText;
-    let detail = null;
-    if (completion.origin.kind === "single") {
-        const name = completion.origin.node.name;
-        const range = completion.origin.nodeNameRange;
-        const left = name.slice(0, range.start);
-        const mid = name.slice(range.start, range.end);
-        const right = name.slice(range.end);
-        label = (demo_react.createElement("span", { style: { color: "rgba(199, 199, 199, 1)" } },
-            left,
-            demo_react.createElement("span", { style: { color: "black" } }, mid),
-            right));
-        detail = completion.origin.node.description;
-    }
-    else if (completion.origin.kind === "multi") {
-        detail = `${completion.origin.count} matching nodes`;
-    }
-    return (demo_react.createElement("li", { className: "suggestion-item", style: {
-            padding: "8px 12px",
-            cursor: "pointer",
-            backgroundColor: isSelected ? "#e6f0ff" : "transparent",
-            display: "flex",
-            alignItems: "center",
-            gap: "1em",
-        } },
-        demo_react.createElement("div", { style: { fontWeight: 800 } }, label),
-        detail && (demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, detail))));
-}
-
-;// ./src/lib/components/NewSmartNodeSelector/completion-adapters/advanced/AdvancedCompletionAdapter.ts
-
-class demo_AdvancedCompletionAdapter {
-    constructor() {
-        this.component = demo_AdvancedCompletionComponent;
-    }
-    makeNodeCompletions(completions) {
-        return completions.filter((comp) => comp.kind === "node");
-    }
-    makeSyntaxCompletions(completions) {
-        return completions.filter((comp) => comp.kind !== "node");
-    }
-    selectPrevious(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        const syntaxCompletions = this.makeSyntaxCompletions(args.completions);
-        if (nodeCompletions.length + syntaxCompletions.length === 0) {
-            return args.selectedIndex;
-        }
-        if (args.selectedIndex === null) {
-            return nodeCompletions.length - 1;
-        }
-        else {
-            return Math.max(args.selectedIndex - 1, -syntaxCompletions.length);
-        }
-    }
-    selectNext(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        const syntaxCompletions = this.makeSyntaxCompletions(args.completions);
-        if (nodeCompletions.length + syntaxCompletions.length === 0) {
-            return args.selectedIndex;
-        }
-        if (args.selectedIndex === null) {
-            if (nodeCompletions.length > 0) {
-                return 0;
-            }
-            else {
-                return -1;
-            }
-        }
-        else {
-            return Math.min(args.selectedIndex + 1, nodeCompletions.length - 1);
-        }
-    }
-    getSelectedCompletion(args) {
-        var _a, _b;
-        if (args.selectedIndex === null) {
-            return null;
-        }
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        const syntaxCompletions = this.makeSyntaxCompletions(args.completions);
-        if (args.selectedIndex >= 0) {
-            return (_a = nodeCompletions[args.selectedIndex]) !== null && _a !== void 0 ? _a : null;
-        }
-        else {
-            const syntaxIndex = -args.selectedIndex - 1;
-            return (_b = syntaxCompletions[syntaxIndex]) !== null && _b !== void 0 ? _b : null;
-        }
-    }
-    hasCompletions(args) {
-        const nodeCompletions = this.makeNodeCompletions(args.completions);
-        return nodeCompletions.length > 0;
-    }
-    transformCompletion(completion) {
-        // Implementation to transform a completion item
-        return {
-            text: completion.insertText,
-            range: completion.replaceRange,
-        };
-    }
-}
-
 ;// ./src/lib/components/NewSmartNodeSelector/core/PubSubDelegate.ts
 
 class demo_PubSubDelegate {
@@ -78259,6 +77764,52 @@ function demo_computeReplaceRange(tokenAt, caretOffset) {
     return { start: caretOffset, end: caretOffset };
 }
 
+;// ./src/lib/components/NewSmartNodeSelector/core/query-language/completion/filterPoolByTailSegments.ts
+
+/**
+ * Filters the pool to only keep candidates that lead to valid matches
+ * when the tail segments are applied against the tree.
+ *
+ * Used for look-ahead filtering in completions: when a query has further
+ * segments after the current editing position, only offer completions that
+ * lead to complete valid paths.
+ */
+function demo_filterPoolByTailSegments(pool, tailSegments, currentSegmentUnionMode, tree, matchName, evaluateExpression) {
+    if (tailSegments.length === 0) {
+        return pool;
+    }
+    const filtered = new Set();
+    for (const candidate of pool) {
+        if (demo_candidateMatchesTail(candidate, tailSegments, currentSegmentUnionMode, tree, matchName, evaluateExpression)) {
+            filtered.add(candidate);
+        }
+    }
+    return filtered;
+}
+function demo_candidateMatchesTail(candidate, tailSegments, currentSegmentUnionMode, tree, matchName, evaluateExpression) {
+    let frontier = new Set([candidate]);
+    let previousUnionMode = currentSegmentUnionMode;
+    let deepMode = false;
+    for (const segment of tailSegments) {
+        if (segment.kind === "deep") {
+            deepMode = true;
+            continue;
+        }
+        const childPool = deepMode
+            ? demo_collectAllDescendants(frontier, tree)
+            : previousUnionMode
+                ? demo_collectAllChildren(frontier, tree)
+                : demo_collectCommonChildren(frontier, tree);
+        frontier = evaluateExpression(segment.expr, childPool, tree, matchName);
+        previousUnionMode = segment.unionMode;
+        deepMode = false;
+        if (frontier.size === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 ;// ./src/lib/components/NewSmartNodeSelector/core/query-language/completion/ranking.ts
 var demo_ranking_rest = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
@@ -78613,6 +78164,7 @@ function demo_getTreeCompletions(context, pool, tree, opts) {
 
 
 
+
 function demo_getCompletions(parsed, caretOffset, tree, matchName, evaluateExpression, opts) {
     const context = demo_getCaretContext(parsed, caretOffset);
     const { frontier, deepMode, unionMode } = demo_evaluatePrefix(parsed.ast, context.segmentIndex, tree, matchName, evaluateExpression);
@@ -78625,8 +78177,27 @@ function demo_getCompletions(parsed, caretOffset, tree, matchName, evaluateExpre
     if (pool.size === 0) {
         return { completions: all, caretContext: context };
     }
+    // Look-ahead: filter pool to only candidates that satisfy tail segments.
+    // Trim trailing empty spans first — an empty last segment (e.g. after typing "Well1/")
+    // has no text yet and would prune every candidate if included.
+    const tailSegments = parsed.ast.segments.slice(context.segmentIndex + 1);
+    while (tailSegments.length > 0) {
+        const spanIndex = context.segmentIndex + 1 + tailSegments.length - 1;
+        const span = parsed.segments[spanIndex];
+        if (span && span.charRange.start === span.charRange.end) {
+            tailSegments.pop();
+        }
+        else {
+            break;
+        }
+    }
+    const effectivePool = !context.insideAttributeFilter &&
+        tailSegments.length > 0 &&
+        context.segmentAst.kind === "expr"
+        ? demo_filterPoolByTailSegments(pool, tailSegments, context.segmentAst.unionMode, tree, matchName, evaluateExpression)
+        : pool;
     // Check if we have a full match in the current segment
-    const hasFullMatch = demo_checkForFullMatch(context, pool, tree, opts);
+    const hasFullMatch = demo_checkForFullMatch(context, effectivePool, tree, opts);
     // Handle attribute filter completions
     if (context.insideAttributeFilter && context.attributeFilterContext) {
         // Filter pool by nodes matching the name pattern (attribute filter treated as epsilon)
@@ -78641,8 +78212,32 @@ function demo_getCompletions(parsed, caretOffset, tree, matchName, evaluateExpre
     else {
         // Add syntax-based completions
         all.push(...demo_getSyntaxCompletions(context, hasFullMatch));
+        // Added all nodes matching the current segment as completions, with tree-based matching and filtering
+        all.push(...Array.from(effectivePool).map((node) => {
+            const completionItem = {
+                label: tree.getName(node),
+                insertText: tree.getName(node),
+                replaceRange: context.replaceRange,
+                segmentReplaceRange: {
+                    start: context.replaceRange.start -
+                        context.segmentAst.charRange.start,
+                    end: context.replaceRange.end -
+                        context.segmentAst.charRange.start,
+                },
+                kind: "segment",
+                origin: {
+                    kind: "single",
+                    node,
+                    nodeNameRange: {
+                        start: 0,
+                        end: tree.getName(node).length,
+                    },
+                },
+            };
+            return completionItem;
+        }));
         // Add tree-based completions
-        all.push(...demo_getTreeCompletions(context, pool, tree, opts));
+        all.push(...demo_getTreeCompletions(context, effectivePool, tree, opts));
     }
     // Deduplicate completions - we can later rank them as well
     const deduped = demo_dedupeCompletions(all);
@@ -79064,7 +78659,7 @@ var demo_CompletionsTopic;
 (function (CompletionsTopic) {
     CompletionsTopic["COMPLETIONS"] = "nodeCompletions";
     CompletionsTopic["CARET_CONTEXT"] = "caretContext";
-    CompletionsTopic["SELECTED_INDEX"] = "selectedIndex";
+    CompletionsTopic["SESSION_STATE"] = "sessionState";
 })(demo_CompletionsTopic || (demo_CompletionsTopic = {}));
 class demo_CompletionsState {
     constructor(options) {
@@ -79072,9 +78667,12 @@ class demo_CompletionsState {
         this._pubSubDelegate = new demo_PubSubDelegate();
         this._completions = [];
         this._caretContext = null;
-        this._selectedIndex = null;
+        this._queryContext = { segmentCount: 0 };
+        this._sessionState = null;
+        this._currentSegmentSelections = [];
+        this._selectionMode = "segment";
         this._treeAccessor = options.treeAccessor;
-        this._adapter = options.completionsAdapter;
+        this._strategy = options.completionStrategy;
         this._matchOptions = (_a = options.matchOptions) !== null && _a !== void 0 ? _a : {};
         this._delimiter = options.delimiter;
     }
@@ -79085,59 +78683,71 @@ class demo_CompletionsState {
         switch (topic) {
             case demo_CompletionsTopic.COMPLETIONS:
                 return () => this._completions;
-            case demo_CompletionsTopic.SELECTED_INDEX:
-                return () => this._selectedIndex;
+            case demo_CompletionsTopic.SESSION_STATE:
+                return () => this._sessionState;
             case demo_CompletionsTopic.CARET_CONTEXT:
                 return () => this._caretContext;
             default:
                 throw new Error(`Unknown topic: ${topic}`);
         }
     }
+    getStrategy() {
+        return this._strategy;
+    }
+    getSessionState() {
+        return this._sessionState;
+    }
+    setSessionState(state) {
+        this._sessionState = state;
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SESSION_STATE);
+    }
+    updateSessionState(updater) {
+        if (this._sessionState === null) {
+            return;
+        }
+        this._sessionState = updater(this._sessionState);
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SESSION_STATE);
+    }
+    getDelimiter() {
+        return this._delimiter;
+    }
     getCompletions() {
         return this._completions;
     }
-    getSelectedIndex() {
-        return this._selectedIndex;
+    getCaretContext() {
+        return this._caretContext;
     }
-    makeAdapterArgs() {
-        return {
-            completions: this._completions,
-            selectedIndex: this._selectedIndex,
-            caretContext: this._caretContext,
-            delimiter: this._delimiter,
-        };
+    getQueryContext() {
+        return this._queryContext;
     }
-    setSelectedIndex(index) {
-        if (this._selectedIndex !== index) {
-            this._selectedIndex = index;
-            this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
-        }
+    getCurrentSegmentSelections() {
+        return this._currentSegmentSelections;
     }
-    getSelectedCompletion() {
-        const selectedCompletion = this._adapter.getSelectedCompletion(this.makeAdapterArgs());
-        if (!selectedCompletion) {
-            return null;
-        }
-        return this._adapter.transformCompletion(selectedCompletion, this.makeAdapterArgs());
-    }
-    hasCompletions() {
-        return this._adapter.hasCompletions(this.makeAdapterArgs());
-    }
-    transformCompletion(completion) {
-        return this._adapter.transformCompletion(completion, this.makeAdapterArgs());
+    getSelectionMode() {
+        return this._selectionMode;
     }
     /**
      * Update completions for the given query and segment index.
      * Called by input handlers when the focused segment changes.
      */
-    updateCompletions(parsedQuery, caretOffset) {
+    updateCompletions(parsedQuery, caretOffset, selectionMode, currentSegmentSelections = []) {
         const { completions, caretContext } = demo_getCompletions(parsedQuery, caretOffset, this._treeAccessor, demo_matchName, demo_evaluateExpression, this._matchOptions);
         this._completions = completions;
         this._caretContext = caretContext;
-        // Reset selected index when completions change
-        this._selectedIndex = null;
+        this._queryContext = { segmentCount: parsedQuery.segments.length };
+        this._currentSegmentSelections = currentSegmentSelections;
+        this._selectionMode = selectionMode;
+        this._sessionState = this._strategy.reconcileState({
+            prevState: this._sessionState,
+            completions: this._completions,
+            caretContext: this._caretContext,
+            queryContext: this._queryContext,
+            delimiter: this._delimiter,
+            selectionMode: this._selectionMode,
+            currentSegmentSelections: this._currentSegmentSelections,
+        });
         this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.COMPLETIONS);
-        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SESSION_STATE);
         this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.CARET_CONTEXT);
     }
     /**
@@ -79145,29 +78755,44 @@ class demo_CompletionsState {
      * Called by input handlers when focus is lost or no segment is focused.
      */
     clearCompletions() {
-        if (this._completions.length > 0 || this._selectedIndex !== null) {
-            this._completions = [];
-            this._selectedIndex = null;
-            this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.COMPLETIONS);
-            this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
+        this._completions = [];
+        this._caretContext = null;
+        this._sessionState = null;
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.COMPLETIONS);
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.CARET_CONTEXT);
+        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SESSION_STATE);
+    }
+    focusStrategy() {
+        var _a, _b;
+        if (this._sessionState === null) {
+            return;
+        }
+        const result = (_b = (_a = this._strategy).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a, {
+            state: this._sessionState,
+            completions: this._completions,
+            caretContext: this._caretContext,
+            queryContext: this._queryContext,
+            delimiter: this._delimiter,
+            selectionMode: this._selectionMode,
+            currentSegmentSelections: this._currentSegmentSelections,
+        });
+        if ((result === null || result === void 0 ? void 0 : result.nextState) !== undefined) {
+            this.setSessionState(result.nextState);
         }
     }
-    getComponent() {
-        return this._adapter.component;
-    }
-    selectNext() {
-        this._selectedIndex = this._adapter.selectNext(this.makeAdapterArgs());
-        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
-    }
-    selectPrevious() {
-        this._selectedIndex = this._adapter.selectPrevious(this.makeAdapterArgs());
-        this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
-    }
-    clearSelection() {
-        if (this._selectedIndex !== null) {
-            this._selectedIndex = null;
-            this._pubSubDelegate.notifySubscribers(demo_CompletionsTopic.SELECTED_INDEX);
+    getAppliedCompletion() {
+        if (this._sessionState === null) {
+            return null;
         }
+        return this._strategy.getAppliedCompletion({
+            completions: this._completions,
+            caretContext: this._caretContext,
+            queryContext: this._queryContext,
+            delimiter: this._delimiter,
+            currentSegmentSelections: this._currentSegmentSelections,
+            selectionMode: this._selectionMode,
+            state: this._sessionState,
+        });
     }
 }
 
@@ -80316,8 +79941,9 @@ class demo_QueryTextSelectionsDelegate {
 
 ;// ./src/lib/components/NewSmartNodeSelector/core/StateManager/SegmentSelectionDelegate.ts
 class demo_SegmentSelectionDelegate {
-    navigateSegment(snapshot, payload) {
+    moveFocus(snapshot, payload) {
         var _a;
+        const { dx, selecting } = payload;
         const { segmentSelection } = snapshot;
         if (!segmentSelection) {
             return { kind: "none" };
@@ -80329,29 +79955,36 @@ class demo_SegmentSelectionDelegate {
         }
         const parsedQuery = snapshot.getParsedQuery(queryItem.query);
         const segmentCount = (_a = parsedQuery === null || parsedQuery === void 0 ? void 0 : parsedQuery.segments.length) !== null && _a !== void 0 ? _a : 1;
-        const newIndex = segmentIndex + payload.direction;
-        if (newIndex < 0 || newIndex >= segmentCount) {
-            // Hit boundary → switch to query selection mode
-            const queryIndex = snapshot.getQueryIndexById(queryId);
-            if (queryIndex === -1) {
-                return { kind: "none" };
+        let newIndex = segmentIndex + dx;
+        if (newIndex < 0) {
+            newIndex = 0;
+            if (!selecting) {
+                return {
+                    kind: "hitBoundary",
+                    boundary: "start",
+                    queryId,
+                };
             }
-            return {
-                kind: "moved",
-                patch: {
-                    selectionMode: "query",
-                    querySelection: { anchor: queryIndex, focus: queryIndex },
-                },
-            };
         }
+        else if (newIndex >= segmentCount) {
+            newIndex = segmentCount - 1;
+            if (!selecting) {
+                return {
+                    kind: "hitBoundary",
+                    boundary: "end",
+                    queryId,
+                };
+            }
+        }
+        const newSelection = {
+            queryId,
+            anchor: selecting ? segmentSelection.anchor : newIndex,
+            focus: newIndex,
+        };
         return {
             kind: "moved",
             patch: {
-                segmentSelection: {
-                    queryId,
-                    anchor: newIndex,
-                    focus: newIndex,
-                },
+                segmentSelection: newSelection,
             },
         };
     }
@@ -80426,9 +80059,88 @@ class demo_SegmentSelectionDelegate {
             },
         };
     }
+    remove(snapshot, payload) {
+        const { segmentSelection } = snapshot;
+        if (!segmentSelection) {
+            return { kind: "none" };
+        }
+        const { queryId, focus: segmentIndex } = segmentSelection;
+        const queryItem = snapshot.getQueryById(queryId);
+        if (!queryItem) {
+            return { kind: "none" };
+        }
+        const parsedQuery = snapshot.getParsedQuery(queryItem.query);
+        if (!parsedQuery) {
+            return { kind: "none" };
+        }
+        const segmentCount = parsedQuery.segments.length;
+        if (segmentCount <= 1) {
+            // Removing the only segment — remove the whole query item and
+            // fall back to query selection of a neighbouring chip.
+            const queryIndex = snapshot.getQueryIndexById(queryId);
+            // Prefer previous (backspace) or next (delete). When there is no
+            // previous chip (queryIndex === 0), fall back to the next chip,
+            // which slides into index 0 after the deletion.
+            const neighbourIndex = payload.direction === -1 && queryIndex > 0
+                ? queryIndex - 1
+                : queryIndex;
+            return {
+                kind: "moved",
+                patch: {
+                    selectionMode: "query",
+                    queryItemUpdates: [{ kind: "remove", item: queryItem }],
+                    segmentSelection: null,
+                    querySelection: {
+                        anchor: neighbourIndex,
+                        focus: neighbourIndex,
+                    },
+                },
+            };
+        }
+        // Splice out the segment and its adjacent delimiter from the query string.
+        const segment = parsedQuery.segments[segmentIndex];
+        let removeStart;
+        let removeEnd;
+        if (segmentIndex < segmentCount - 1) {
+            // Not the last segment: remove the segment + the delimiter after it.
+            removeStart = segment.charRange.start;
+            removeEnd = parsedQuery.segments[segmentIndex + 1].charRange.start;
+        }
+        else {
+            // Last segment: remove the delimiter before it + the segment.
+            removeStart = parsedQuery.segments[segmentIndex - 1].charRange.end;
+            removeEnd = segment.charRange.end;
+        }
+        const newQuery = queryItem.query.slice(0, removeStart) +
+            queryItem.query.slice(removeEnd);
+        // direction=-1 (backspace): land on the segment before the deleted one.
+        // direction=+1 (delete): land on the same index (next segment slides in),
+        //   clamped to the new last segment.
+        const newSegmentIndex = payload.direction === -1
+            ? Math.max(0, segmentIndex - 1)
+            : Math.min(segmentIndex, segmentCount - 2);
+        return {
+            kind: "moved",
+            patch: {
+                queryItemUpdates: [
+                    { kind: "update", item: { id: queryId, query: newQuery } },
+                ],
+                segmentSelection: {
+                    queryId,
+                    anchor: newSegmentIndex,
+                    focus: newSegmentIndex,
+                },
+            },
+        };
+    }
 }
 
 ;// ./src/lib/components/NewSmartNodeSelector/core/StateManager/StateManager.ts
+
+
+
+
+
 
 
 
@@ -80448,6 +80160,7 @@ var demo_Topic;
     Topic["COMPLETION_CONTEXT"] = "completionContext";
     Topic["DATA_REVISION"] = "dataRevision";
     Topic["SEGMENT_SELECTION"] = "segmentSelection";
+    Topic["COMPLETIONS_POPOVER_FOCUSED"] = "completionsPopoverFocused";
 })(demo_Topic || (demo_Topic = {}));
 class demo_StateManager {
     constructor(options) {
@@ -80468,6 +80181,8 @@ class demo_StateManager {
         this._parseCache = new demo_Cache();
         this._treeMatchCache = new demo_Cache();
         this._completionContext = null;
+        this._completionsPopoverFocused = false;
+        this._hasFocus = false;
         this._options = options;
     }
     makeTextSelectionsSnapshot() {
@@ -80534,11 +80249,17 @@ class demo_StateManager {
         if (patch.querySelection !== undefined) {
             this._querySelection = patch.querySelection;
             this.setSelectionMode("query");
+            this._pubSubDelegate.notifySubscribers(demo_Topic.QUERY_SELECTION);
         }
         if (patch.segmentSelection !== undefined) {
             this._segmentSelection = patch.segmentSelection;
             if (patch.segmentSelection !== null) {
                 this.setSelectionMode("segment");
+                this._focusedSegment = {
+                    queryId: patch.segmentSelection.queryId,
+                    segmentIndex: patch.segmentSelection.focus,
+                };
+                this._pubSubDelegate.notifySubscribers(demo_Topic.FOCUSED_SEGMENT);
                 this._pubSubDelegate.notifySubscribers(demo_Topic.SEGMENT_SELECTION);
                 this._pubSubDelegate.notifySubscribers(demo_Topic.HAS_FOCUS);
             }
@@ -80658,6 +80379,7 @@ class demo_StateManager {
             this.clearQuerySelection();
             this.clearSegmentSelection();
         }
+        this.updateCompletionsContext();
     }
     clearSegmentSelection() {
         if (this._segmentSelection === null) {
@@ -80782,26 +80504,47 @@ class demo_StateManager {
                 return () => this._dataRevision;
             case demo_Topic.SEGMENT_SELECTION:
                 return () => this._segmentSelection;
+            case demo_Topic.COMPLETIONS_POPOVER_FOCUSED:
+                return () => this._completionsPopoverFocused;
         }
         throw new Error(`Unknown topic: ${topic}`);
     }
     processFocusChange(hasFocus) {
-        const currentlyHasFocus = this._queryTextSelections.length > 0 ||
-            this._querySelection !== null ||
-            this._segmentSelection !== null;
+        const currentlyHasFocus = this._hasFocus;
+        this._hasFocus = hasFocus;
         if (hasFocus) {
-            // Only set caret position if we don't already have focus
+            // Only fall back to last item if we don't already have focus AND
+            // no selection was set by a prior mousedown handler (e.g. a click
+            // on a segment or chip before the textarea received its focus event).
             if (!currentlyHasFocus) {
-                this.setTextFocusOffsetToEndOfLastItem();
+                const hasActiveSelection = this._queryTextSelections.length > 0 ||
+                    this._querySelection !== null ||
+                    this._segmentSelection !== null;
+                if (!hasActiveSelection) {
+                    this.setSegmentFocusOffsetToLastItem();
+                }
             }
         }
         else {
-            // Clear all selection states when focus is lost
-            if (currentlyHasFocus) {
+            // Clear all selection states when focus is lost, unless the
+            // completions popover currently holds focus (e.g. a NewCompletionsAdapter
+            // component with its own interactive input).
+            if (currentlyHasFocus && !this._completionsPopoverFocused) {
                 this.clearQueryTextSelections();
                 this.clearQuerySelection();
                 this.clearSegmentSelection();
             }
+        }
+    }
+    setCompletionsPopoverFocused(hasFocus) {
+        if (this._completionsPopoverFocused === hasFocus)
+            return;
+        this._completionsPopoverFocused = hasFocus;
+        this._pubSubDelegate.notifySubscribers(demo_Topic.COMPLETIONS_POPOVER_FOCUSED);
+        if (!hasFocus) {
+            // Re-notify HAS_FOCUS so HiddenTextarea re-focuses the textarea
+            // if we still have an active selection.
+            this._pubSubDelegate.notifySubscribers(demo_Topic.HAS_FOCUS);
         }
     }
     computeSegmentIndex(query, focusOffset) {
@@ -80898,14 +80641,30 @@ class demo_StateManager {
         this.updateCompletionsContext();
     }
     updateCompletionsContext() {
-        if (this._queryTextSelections.length !== 1 ||
-            this._selectionMode === "segment") {
+        var _a;
+        let queryItem = null;
+        let segmentIndex = null;
+        if (this._selectionMode === "query") {
             this._completionContext = null;
-            this._pubSubDelegate.notifySubscribers(demo_Topic.COMPLETION_CONTEXT);
             return;
         }
-        const queryItem = this._queriesStoreDelegate.getItemById(this._queryTextSelections[0].queryId);
-        if (!queryItem) {
+        if (this._selectionMode === "segment") {
+            if (!this._segmentSelection) {
+                this._completionContext = null;
+                return;
+            }
+            queryItem = this._queriesStoreDelegate.getItemById(this._segmentSelection.queryId);
+            segmentIndex = this._segmentSelection.focus;
+        }
+        else if (this._selectionMode === "text") {
+            if (this._queryTextSelections.length === 0) {
+                this._completionContext = null;
+                return;
+            }
+            queryItem = this._queriesStoreDelegate.getItemById(this._queryTextSelections[0].queryId);
+            segmentIndex = this.computeSegmentIndex((_a = queryItem === null || queryItem === void 0 ? void 0 : queryItem.query) !== null && _a !== void 0 ? _a : "", this._queryTextSelections[0].focus);
+        }
+        if (!queryItem || segmentIndex === null) {
             this._completionContext = null;
             return;
         }
@@ -80913,7 +80672,8 @@ class demo_StateManager {
             queryId: queryItem.id,
             queryItem,
             queryTextSelection: this._queryTextSelections[0],
-            segmentIndex: this.computeSegmentIndex(queryItem.query, this._queryTextSelections[0].focus),
+            segmentIndex,
+            selectionMode: this._selectionMode,
         };
         this._pubSubDelegate.notifySubscribers(demo_Topic.COMPLETION_CONTEXT);
     }
@@ -80961,7 +80721,7 @@ class demo_StateManager {
         }
     }
     confirm() {
-        var _a, _b;
+        var _a, _b, _c, _d, _e;
         if (this._selectionMode === "query") {
             const queryIndex = (_a = this._querySelection) === null || _a === void 0 ? void 0 : _a.focus;
             if (queryIndex === undefined) {
@@ -80971,15 +80731,9 @@ class demo_StateManager {
             if (!queryItem) {
                 return;
             }
-            // Non-empty chip → enter segment mode on last segment
-            if (queryItem.query.length > 0) {
-                const parsedQuery = this.getParsedQuery(queryItem.query);
-                const lastSegmentIndex = Math.max(0, ((_b = parsedQuery === null || parsedQuery === void 0 ? void 0 : parsedQuery.segments.length) !== null && _b !== void 0 ? _b : 1) - 1);
-                this.enterSegmentSelection(queryItem.id, lastSegmentIndex);
-                return;
-            }
-            // Empty chip → enter text mode (existing behaviour)
-            this.setTextFocusOffsetToEndOfQueryItem(queryItem.id);
+            const parsedQuery = this.getParsedQuery(queryItem.query);
+            const lastSegmentIndex = Math.max(0, ((_b = parsedQuery === null || parsedQuery === void 0 ? void 0 : parsedQuery.segments.length) !== null && _b !== void 0 ? _b : 1) - 1);
+            this.enterSegmentSelection(queryItem.id, lastSegmentIndex);
             return;
         }
         if (this._selectionMode === "segment") {
@@ -80990,8 +80744,27 @@ class demo_StateManager {
             return;
         }
         if (this._selectionMode === "text") {
-            this.addQueryItem("");
-            this.setTextFocusOffsetToEndOfLastItem();
+            const queryId = (_c = this._queryTextSelections[0]) === null || _c === void 0 ? void 0 : _c.queryId;
+            if (queryId === undefined) {
+                return;
+            }
+            const queryItem = this._queriesStoreDelegate.getItemById(queryId);
+            if (!queryItem) {
+                return;
+            }
+            const matchedNodes = (_e = (_d = this.getMatchedNodesForQuery(queryItem.query)) === null || _d === void 0 ? void 0 : _d.matches) !== null && _e !== void 0 ? _e : [];
+            const matchedLeafNodes = Array.from(matchedNodes).filter((node) => node.isLeaf);
+            if (matchedLeafNodes.length > 0) {
+                this.setTextFocusOffsetToEndOfLastItem();
+                return;
+            }
+            const segmentIndex = this.computeSegmentIndex(queryItem.query, this._queryTextSelections[0].focus);
+            if (segmentIndex <
+                queryItem.query.split(this._options.segmentDelimiter).length - 1) {
+                this.moveFocus(1, false, false);
+                return;
+            }
+            this.insertText(this._options.segmentDelimiter, false);
             return;
         }
         throw new Error("Invalid selection mode");
@@ -81043,6 +80816,16 @@ class demo_StateManager {
                 this.clearSegmentSelection();
                 return;
             }
+            const numQueries = this._queriesStoreDelegate.getNumItems();
+            if (queryIndex === numQueries - 1) {
+                const lastItem = this._queriesStoreDelegate.getItemByIndex(queryIndex);
+                if (lastItem && lastItem.query === "") {
+                    // The last placeholder query is not selectable in query mode;
+                    // exit directly to unfocused state.
+                    this.clearQuerySelection();
+                    return;
+                }
+            }
             this.applyPatch({
                 selectionMode: "query",
                 querySelection: { anchor: queryIndex, focus: queryIndex },
@@ -81053,7 +80836,7 @@ class demo_StateManager {
     }
     moveFocus(dx, selecting, keyHoldPressed) {
         var _a, _b;
-        if (this._selectionMode !== "text") {
+        if (this._selectionMode === "query") {
             const snapshot = this.makeQuerySelectionSnapshot();
             const result = this._querySelectionDelegate.moveFocus(snapshot, {
                 dx,
@@ -81073,6 +80856,35 @@ class demo_StateManager {
                 return;
             }
             if (result.kind === "hitBoundary") {
+                return;
+            }
+        }
+        if (this._selectionMode === "segment") {
+            const snapshot = this.makeSegmentSelectionSnapshot();
+            const result = this._segmentSelectionDelegate.moveFocus(snapshot, {
+                dx,
+                selecting,
+            });
+            if (result.kind === "moved") {
+                this.applyPatch(result.patch);
+                return;
+            }
+            if (result.kind === "hitBoundary") {
+                if (selecting || keyHoldPressed) {
+                    return;
+                }
+                const queryId = result.queryId;
+                const queryIndex = this._queriesStoreDelegate.getIndexById(queryId);
+                if (queryIndex === -1) {
+                    return;
+                }
+                this.applyPatch({
+                    selectionMode: "query",
+                    querySelection: {
+                        anchor: queryIndex,
+                        focus: queryIndex,
+                    },
+                });
                 return;
             }
         }
@@ -81130,6 +80942,20 @@ class demo_StateManager {
             const result = this._querySelectionDelegate.remove(snapshot);
             if (result.kind === "moved") {
                 this.applyPatch(result.patch);
+            }
+            return;
+        }
+        if (this._selectionMode === "segment") {
+            if (!this._segmentSelection) {
+                return;
+            }
+            const snapshot = this.makeSegmentSelectionSnapshot();
+            const result = this._segmentSelectionDelegate.remove(snapshot, {
+                direction: direction === "backward" ? -1 : 1,
+            });
+            if (result.kind === "moved") {
+                this.applyPatch(result.patch);
+                return;
             }
             return;
         }
@@ -81207,6 +81033,59 @@ class demo_StateManager {
             return;
         }
         this.insertText(text, false);
+    }
+    applyFocusedCompletion(insertText, range, moveFocus) {
+        if (this._selectionMode === "segment" && this._segmentSelection) {
+            const { queryId, focus: segmentIndex } = this._segmentSelection;
+            if (!this.updateQueryItem(queryId, insertText, range)) {
+                return false;
+            }
+            if (moveFocus) {
+                const queryItem = this._queriesStoreDelegate.getItemById(queryId);
+                const parsedQuery = queryItem
+                    ? this.getParsedQuery(queryItem.query)
+                    : null;
+                const nextSegmentIndex = segmentIndex + 1;
+                if (parsedQuery &&
+                    nextSegmentIndex < parsedQuery.segments.length) {
+                    this.enterSegmentSelection(queryId, nextSegmentIndex);
+                }
+                else {
+                    const nextQuery = this._queriesStoreDelegate.getNextItem(queryId);
+                    if (nextQuery) {
+                        this.enterSegmentSelection(nextQuery.id, 0);
+                    }
+                    else {
+                        this.updateCompletionsContext();
+                    }
+                }
+            }
+            else {
+                this.updateCompletionsContext();
+            }
+            return true;
+        }
+        if (!this.updateFocusedQueryItem(insertText, range)) {
+            return false;
+        }
+        if (moveFocus && this._queryTextSelections.length === 1) {
+            const queryId = this._queryTextSelections[0].queryId;
+            const caretOffset = this._queryTextSelections[0].focus;
+            const queryItem = this._queriesStoreDelegate.getItemById(queryId);
+            const parsedQuery = queryItem
+                ? this.getParsedQuery(queryItem.query)
+                : null;
+            if (parsedQuery) {
+                const segmentIndex = parsedQuery.segments.findIndex((s) => caretOffset >= s.charRange.start &&
+                    caretOffset <= s.charRange.end);
+                const nextIndex = segmentIndex + 1;
+                if (segmentIndex !== -1 &&
+                    nextIndex < parsedQuery.segments.length) {
+                    this.setTextFocusOffsetToEndOfSegment(queryId, nextIndex);
+                }
+            }
+        }
+        return true;
     }
     updateFocusedQueryItem(insertText, range) {
         if (this._queryTextSelections.length !== 1) {
@@ -81330,6 +81209,19 @@ class demo_StateManager {
             this.applyPatch(result.patch);
         }
     }
+    setSegmentFocusOffsetToLastItem() {
+        const lastItem = this._queriesStoreDelegate.getLastItem();
+        if (!lastItem) {
+            return;
+        }
+        const parsedQuery = this.getParsedQuery(lastItem.query);
+        if (!parsedQuery || parsedQuery.segments.length === 0) {
+            return;
+        }
+        const lastSegmentIndex = parsedQuery.segments.length - 1;
+        this.setSelectionMode("segment");
+        this.enterSegmentSelection(lastItem.id, lastSegmentIndex);
+    }
     setTextFocusOffsetToEndOfLastItem() {
         const lastItem = this._queriesStoreDelegate.getLastItem();
         if (!lastItem) {
@@ -81369,6 +81261,25 @@ class demo_StateManager {
             getSegmentSiblings: (queryId, segmentIndex) => this.getSegmentSiblings(queryId, segmentIndex),
         };
     }
+    enterQuerySelectionAtIndex(index) {
+        const numQueries = this._queriesStoreDelegate.getNumItems();
+        let selectableIndex = index;
+        if (index === numQueries - 1) {
+            const lastItem = this._queriesStoreDelegate.getItemByIndex(index);
+            if (lastItem && lastItem.query === "") {
+                selectableIndex = index - 1;
+            }
+        }
+        if (selectableIndex < 0) {
+            return;
+        }
+        this.applyPatch({
+            querySelection: {
+                anchor: selectableIndex,
+                focus: selectableIndex,
+            },
+        });
+    }
     enterSegmentSelection(queryId, segmentIndex) {
         this._segmentSelection = {
             queryId,
@@ -81376,16 +81287,20 @@ class demo_StateManager {
             focus: segmentIndex,
         };
         this.setSelectionMode("segment");
+        this._focusedSegment = { queryId, segmentIndex };
         this._pubSubDelegate.notifySubscribers(demo_Topic.SEGMENT_SELECTION);
         this._pubSubDelegate.notifySubscribers(demo_Topic.HAS_FOCUS);
+        this._pubSubDelegate.notifySubscribers(demo_Topic.FOCUSED_SEGMENT);
         this.updateCompletionsContext();
     }
-    navigateSegment(direction) {
+    navigateSegment(direction, keyHoldPressed) {
         if (this._selectionMode !== "segment") {
             return;
         }
         const snapshot = this.makeSegmentSelectionSnapshot();
-        const result = this._segmentSelectionDelegate.navigateSegment(snapshot, { direction });
+        const result = this._segmentSelectionDelegate.moveFocus(snapshot, {
+            dx: direction,
+        });
         if (result.kind === "moved") {
             this.applyPatch(result.patch);
         }
@@ -81449,37 +81364,52 @@ class demo_StateManager {
         if (!queryItem) {
             return [];
         }
-        if (segmentIndex === 0) {
-            const root = this._treeAccessor.getRoot();
-            const names = new Set();
-            for (const child of this._treeAccessor.getChildren(root)) {
-                names.add(this._treeAccessor.getName(child));
-            }
-            return [...names].sort();
-        }
         const parsedQuery = this.getParsedQuery(queryItem.query);
         if (!parsedQuery) {
             return [];
         }
-        const prevSegment = parsedQuery.segments[segmentIndex - 1];
-        if (!prevSegment) {
+        // Build the child pool exactly as getCompletions does: use evaluatePrefix
+        // to get the same frontier + deepMode + unionMode, then apply the same
+        // pool-collection strategy. This keeps the sibling set in sync with the
+        // completions list (same intersection/union semantics).
+        const { frontier, deepMode, unionMode } = demo_evaluatePrefix(parsedQuery.ast, segmentIndex, this._treeAccessor, demo_matchName, demo_evaluateExpression);
+        if (frontier.size === 0) {
             return [];
         }
-        const prefixText = queryItem.query.slice(0, prevSegment.charRange.end);
-        const parsedPrefix = demo_parseQuery(prefixText, {
-            delimiter: this._options.segmentDelimiter,
-        });
-        const result = demo_evaluateQuery(parsedPrefix, this._treeAccessor);
-        if (result.matches.size === 0) {
-            return [];
-        }
-        const names = new Set();
-        for (const node of result.matches) {
-            for (const child of this._treeAccessor.getChildren(node)) {
-                names.add(this._treeAccessor.getName(child));
+        const childPool = deepMode
+            ? demo_collectAllDescendants(frontier, this._treeAccessor)
+            : unionMode
+                ? demo_collectAllChildren(frontier, this._treeAccessor)
+                : demo_collectCommonChildren(frontier, this._treeAccessor);
+        // Look-ahead: filter pool to only candidates that satisfy tail segments.
+        // Trim trailing empty spans first — an empty last segment (e.g. after typing "Well1/")
+        // has no text yet and would prune every candidate if included.
+        const currentSegmentAst = parsedQuery.ast.segments[segmentIndex];
+        const tailSegments = parsedQuery.ast.segments.slice(segmentIndex + 1);
+        while (tailSegments.length > 0) {
+            const spanIndex = segmentIndex + 1 + tailSegments.length - 1;
+            const span = parsedQuery.segments[spanIndex];
+            if (span && span.charRange.start === span.charRange.end) {
+                tailSegments.pop();
+            }
+            else {
+                break;
             }
         }
-        return [...names].sort();
+        const effectivePool = tailSegments.length > 0 && (currentSegmentAst === null || currentSegmentAst === void 0 ? void 0 : currentSegmentAst.kind) === "expr"
+            ? demo_filterPoolByTailSegments(childPool, tailSegments, currentSegmentAst.unionMode, this._treeAccessor, demo_matchName, demo_evaluateExpression)
+            : childPool;
+        // Collect unique names and sort by (length, alpha) to match the order
+        // that rankCompletions produces for segment-kind items (textPenalty ≈ length).
+        const nameSet = new Set();
+        for (const node of effectivePool) {
+            nameSet.add(this._treeAccessor.getName(node));
+        }
+        return [...nameSet].sort((a, b) => {
+            if (a.length !== b.length)
+                return a.length - b.length;
+            return a < b ? -1 : a > b ? 1 : 0;
+        });
     }
 }
 function demo_selectionToRange(selection) {
@@ -81767,21 +81697,68 @@ function demo_mapTruncatedClickToFullOffset(clickX, truncationInfo, segmentEleme
 function demo_useMouseEventHandler(ref, stateManager, delimiter) {
     demo_react.useEffect(function setupMouseEventHandler() {
         var _a;
+        let mouseDownPosition = null;
         const abortController = new AbortController();
         function handleMouseDown(event) {
+            if (event.button !== 0)
+                return; // Only proceed for left mouse button
+            mouseDownPosition = { x: event.clientX, y: event.clientY };
+            window.addEventListener("mousemove", handleMouseMove, {
+                signal: abortController.signal,
+            });
+            window.addEventListener("mouseup", handleMouseUp, {
+                signal: abortController.signal,
+                once: true,
+            });
+            event.preventDefault();
+        }
+        function handleMouseUp(event) {
             var _a, _b, _c, _d, _e;
             if (event.button !== 0)
                 return; // Only proceed for left mouse button
+            // If mouse moved significantly since mousedown, treat as drag and don't change selection
+            if (mouseDownPosition) {
+                const deltaX = event.clientX - mouseDownPosition.x;
+                const deltaY = event.clientY - mouseDownPosition.y;
+                const distanceSquared = deltaX * deltaX + deltaY * deltaY;
+                const dragThreshold = 5 * 5; // 5 pixels threshold
+                if (distanceSquared > dragThreshold) {
+                    mouseDownPosition = null;
+                    return;
+                }
+            }
             const target = event.target;
             const selection = event.shiftKey;
             const currentCaretPositions = stateManager.getQueryTextSelections();
             // Find the closest segment element
             const segmentElement = target.closest("[data-segment-index]");
             if (!segmentElement) {
-                // Clicking outside a segment should set caret to end
-                // This will trigger hasFocus=true, which will make HiddenTextarea focus
+                // Don't intercept interactive elements (e.g. remove buttons)
+                if (target.closest("button")) {
+                    return;
+                }
+                // If a query chip is under the cursor, enter query selection
+                // for that chip rather than jumping to the end of the last item.
+                const chipElement = target.closest("[data-querychip-id]");
+                if (chipElement) {
+                    const chipId = chipElement.getAttribute("data-querychip-id");
+                    if (chipId) {
+                        const chipIndex = stateManager.getQueryItemIndexById(chipId);
+                        // Only enter query selection for non-last chips.
+                        // The last chip is the editing slot that fills the
+                        // remaining space; clicking its empty area should
+                        // fall through to selecting the last segment below.
+                        const isLastChip = stateManager.getQueryItemByIndex(chipIndex + 1) === null;
+                        if (chipIndex >= 0 && !isLastChip) {
+                            event.preventDefault();
+                            stateManager.enterQuerySelectionAtIndex(chipIndex);
+                            return;
+                        }
+                    }
+                }
+                // Clicking outside any chip — select last segment
                 event.preventDefault();
-                stateManager.setTextFocusOffsetToEndOfLastItem();
+                stateManager.setSegmentFocusOffsetToLastItem();
                 return;
             }
             const queryId = segmentElement.getAttribute("data-segment-query-id");
@@ -81804,7 +81781,7 @@ function demo_useMouseEventHandler(ref, stateManager, delimiter) {
                 const isActiveSegment = (currentSeg === null || currentSeg === void 0 ? void 0 : currentSeg.queryId) === queryId &&
                     (currentSeg === null || currentSeg === void 0 ? void 0 : currentSeg.focus) === segmentIndex;
                 if (!isActiveSegment) {
-                    // Different segment → enter segment mode for that one
+                    // Different segment -> enter segment mode for that one
                     stateManager.enterSegmentSelection(queryId, segmentIndex);
                     event.preventDefault();
                     return;
@@ -81872,13 +81849,7 @@ function demo_useMouseEventHandler(ref, stateManager, delimiter) {
                 anchor: anchorOffset,
             });
             event.preventDefault();
-            window.addEventListener("mousemove", handleMouseMove, {
-                signal: abortController.signal,
-            });
-            window.addEventListener("mouseup", handleMouseUp, {
-                signal: abortController.signal,
-                once: true,
-            });
+            window.removeEventListener("mousemove", handleMouseMove);
         }
         function handleMouseMove(event) {
             var _a, _b, _c, _d, _e, _f;
@@ -81962,9 +81933,6 @@ function demo_useMouseEventHandler(ref, stateManager, delimiter) {
                 anchor: anchorOffset,
             });
             event.preventDefault();
-        }
-        function handleMouseUp() {
-            window.removeEventListener("mousemove", handleMouseMove);
         }
         (_a = ref.current) === null || _a === void 0 ? void 0 : _a.addEventListener("mousedown", handleMouseDown, {
             signal: abortController.signal,
@@ -82213,13 +82181,14 @@ function demo_CaretAndSelectionRenderer(props) {
 
 
 function demo_CompletionsPopover(props) {
+    var _a;
     const { stateManager, completionsState } = demo_react.useContext(demo_SmartNodeSelectorDataContext);
     const popoverRef = demo_react.useRef(null);
     const [anchorElement, setAnchorElement] = demo_react.useState(null);
     const [maxHeight, setMaxHeight] = demo_react.useState(0);
     const directionRef = demo_react.useRef("down");
     const completions = demo_useSubscribeToTopic(completionsState, demo_CompletionsTopic.COMPLETIONS);
-    const selectedIndex = demo_useSubscribeToTopic(completionsState, demo_CompletionsTopic.SELECTED_INDEX);
+    const sessionState = demo_useSubscribeToTopic(completionsState, demo_CompletionsTopic.SESSION_STATE);
     const caretContext = demo_useSubscribeToTopic(completionsState, demo_CompletionsTopic.CARET_CONTEXT);
     const updatePosition = demo_react.useCallback(function updatePosition() {
         if (!anchorElement || !popoverRef.current) {
@@ -82262,45 +82231,138 @@ function demo_CompletionsPopover(props) {
     }, [anchorElement]);
     demo_useElementBoundingRect(anchorElement, updatePosition);
     const focusedSegment = demo_useSubscribeToTopic(stateManager, demo_Topic.FOCUSED_SEGMENT);
+    const completionsPopoverFocused = demo_useSubscribeToTopic(stateManager, demo_Topic.COMPLETIONS_POPOVER_FOCUSED);
     demo_react.useEffect(function onFocusedAddressChange() {
         var _a, _b, _c, _d;
         if (focusedSegment === null) {
-            (_a = popoverRef.current) === null || _a === void 0 ? void 0 : _a.hidePopover();
-            setAnchorElement(null);
+            // When the popover has focus, focusedSegment can transiently
+            // become null mid-state-transition (e.g. segment mode moving
+            // between segments calls clearQueryTextSelections internally).
+            // Hiding the popover in that case moves DOM focus away and
+            // breaks the focus chain. Only hide when the popover is not
+            // focused, or when the state has genuinely settled to null.
+            if (!completionsPopoverFocused) {
+                (_a = popoverRef.current) === null || _a === void 0 ? void 0 : _a.hidePopover();
+                setAnchorElement(null);
+            }
             return;
         }
         const inputElement = (_b = props.mainRef.current) === null || _b === void 0 ? void 0 : _b.querySelector(`[data-querychip-id="${focusedSegment.queryId}"]`);
         if (inputElement) {
             setAnchorElement(inputElement);
-            (_c = popoverRef.current) === null || _c === void 0 ? void 0 : _c.showPopover();
+            // showPopover throws InvalidStateError in Chrome 120+ when
+            // already showing (e.g. after a caret move that creates a new
+            // focusedSegment object with the same values). Ignore safely.
+            try {
+                (_c = popoverRef.current) === null || _c === void 0 ? void 0 : _c.showPopover();
+            }
+            catch (_e) {
+                // already showing – no-op
+            }
         }
         else {
             (_d = popoverRef.current) === null || _d === void 0 ? void 0 : _d.hidePopover();
             setAnchorElement(null);
         }
-    }, [focusedSegment, props.mainRef]);
-    const CompletionsComponent = completionsState.getComponent();
-    const handleSelectCompletion = demo_react.useCallback(function handleSelectCompletion(completionIndex) {
-        completionsState.setSelectedIndex(completionIndex);
-        const selectedCompletion = completionsState.getSelectedCompletion();
-        if (!selectedCompletion) {
+    }, [focusedSegment, props.mainRef, completionsPopoverFocused]);
+    demo_react.useEffect(function focusPopoverWhenActive() {
+        var _a;
+        if (completionsPopoverFocused) {
+            (_a = popoverRef.current) === null || _a === void 0 ? void 0 : _a.focus({ preventScroll: true });
+            completionsState.focusStrategy();
+        }
+    }, [completionsPopoverFocused, completionsState]);
+    const strategy = completionsState.getStrategy();
+    const StrategyComponent = strategy.component;
+    const handleAccept = demo_react.useCallback(function handleAccept() {
+        const appliedCompletion = completionsState.getAppliedCompletion();
+        if (!appliedCompletion) {
             return;
         }
-        const { text, range } = selectedCompletion;
-        stateManager.updateFocusedQueryItem(text, range);
-    }, [stateManager, completionsState]);
-    return (demo_react.createElement("div", { ref: popoverRef, popover: "manual", "data-completion-popover": true, onMouseDown: (e) => {
+        stateManager.applyFocusedCompletion(appliedCompletion.text, appliedCompletion.range, appliedCompletion.moveFocus);
+        stateManager.setCompletionsPopoverFocused(false);
+    }, [completionsState, stateManager]);
+    const handleClose = demo_react.useCallback(function handleClose() {
+        stateManager.setCompletionsPopoverFocused(false);
+    }, [stateManager]);
+    const handleSetState = demo_react.useCallback(function handleSetState(updater) {
+        if (typeof updater === "function") {
+            completionsState.updateSessionState(updater);
+        }
+        else {
+            completionsState.setSessionState(updater);
+        }
+    }, [completionsState]);
+    const handleKeyDown = demo_react.useCallback(function handleKeyDown(e) {
+        if (sessionState === null) {
+            return;
+        }
+        // Arrow left/right move the caret in the editor while keeping the
+        // popover focused so the user can keep navigating completions.
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            stateManager.moveFocus(e.key === "ArrowLeft" ? -1 : 1, e.shiftKey, false);
+            e.preventDefault();
+            return;
+        }
+        const result = strategy.onKeyDown(e, {
+            state: sessionState,
+            completions,
+            caretContext,
+            queryContext: completionsState.getQueryContext(),
+            delimiter: completionsState.getDelimiter(),
+            selectionMode: completionsState.getSelectionMode(),
+            currentSegmentSelections: completionsState.getCurrentSegmentSelections(),
+        });
+        if (result.nextState !== undefined) {
+            completionsState.setSessionState(result.nextState);
+        }
+        if (result.accept) {
+            handleAccept();
+        }
+        if (result.close) {
+            handleClose();
+        }
+        if (result.focusEditor) {
+            stateManager.setCompletionsPopoverFocused(false);
+        }
+        if (result.nextState !== undefined ||
+            result.accept ||
+            result.close ||
+            result.focusEditor) {
+            e.preventDefault();
+        }
+    }, [
+        strategy,
+        sessionState,
+        completions,
+        caretContext,
+        completionsState,
+        handleAccept,
+        handleClose,
+        stateManager,
+    ]);
+    const segmentSelections = (focusedSegment === null || focusedSegment === void 0 ? void 0 : focusedSegment.queryId)
+        ? (_a = stateManager.getMatchedNodesForQuerySegment(focusedSegment.queryId, focusedSegment.segmentIndex)) === null || _a === void 0 ? void 0 : _a.matches
+        : [];
+    const shouldRenderStrategy = sessionState !== null;
+    return (demo_react.createElement("div", { ref: popoverRef, popover: "manual", "data-completion-popover": true, tabIndex: -1, onMouseDown: (e) => {
             // Prevent mousedown from causing textarea to lose focus
             e.preventDefault();
-        }, style: {
+        }, onFocus: () => {
+            stateManager.setCompletionsPopoverFocused(true);
+        }, onBlur: (e) => {
+            // Only clear when focus leaves the popover entirely
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+                stateManager.setCompletionsPopoverFocused(false);
+            }
+        }, onKeyDown: handleKeyDown, style: {
             boxSizing: "border-box",
             border: "1px solid #ccc",
             borderRadius: 4,
             backgroundColor: "white",
             boxShadow: "0 2px 8px rgba(42, 42, 42, 0.15)",
             inset: "unset",
-        } },
-        demo_react.createElement(CompletionsComponent, { completions: completions, maxContainerHeight: maxHeight, selectedIndex: selectedIndex, onSelectCompletion: handleSelectCompletion, caretContext: caretContext })));
+        } }, shouldRenderStrategy && (demo_react.createElement(StrategyComponent, { state: sessionState, completions: completions, caretContext: caretContext, queryContext: completionsState.getQueryContext(), delimiter: completionsState.getDelimiter(), maxContainerHeight: maxHeight, currentSegmentSelections: Array.from(segmentSelections !== null && segmentSelections !== void 0 ? segmentSelections : []), setState: handleSetState, accept: handleAccept, close: handleClose, selectionMode: completionsState.getSelectionMode() }))));
 }
 
 ;// ./src/lib/components/NewSmartNodeSelector/ui/DebugInfo.tsx
@@ -82319,7 +82381,7 @@ function demo_DebugInfo() {
     const textSelections = demo_useSubscribeToTopic(context.stateManager, demo_Topic.QUERY_TEXT_SELECTIONS);
     const hasFocus = demo_useSubscribeToTopic(context.stateManager, demo_Topic.HAS_FOCUS);
     const focusedSegment = demo_useSubscribeToTopic(context.stateManager, demo_Topic.FOCUSED_SEGMENT);
-    const selectedIndex = demo_useSubscribeToTopic(context.completionsState, demo_CompletionsTopic.SELECTED_INDEX);
+    const sessionState = demo_useSubscribeToTopic(context.completionsState, demo_CompletionsTopic.SESSION_STATE);
     const querySelection = demo_useSubscribeToTopic(context.stateManager, demo_Topic.QUERY_SELECTION);
     const handleMouseDown = demo_react.useCallback(function handleMouseDown(e) {
         setIsDragging(true);
@@ -82661,13 +82723,13 @@ function demo_DebugInfo() {
                                     fontFamily: "monospace",
                                     fontSize: 12,
                                     color: "#666",
-                                } }, "Selected Index:"),
+                                } }, "Completion Session State"),
                             demo_react.createElement("span", { style: {
                                     fontFamily: "monospace",
                                     fontSize: 12,
                                     fontWeight: 600,
                                     color: "#0066cc",
-                                } }, selectedIndex !== null && selectedIndex !== void 0 ? selectedIndex : "—"))))))));
+                                } }, JSON.stringify(sessionState !== null && sessionState !== void 0 ? sessionState : "-")))))))));
 }
 
 ;// ./src/lib/components/NewSmartNodeSelector/core/KeyboardHandler.ts
@@ -82692,29 +82754,20 @@ class demo_KeyboardHandler {
     handleKeyDown(event) {
         const { key, shiftKey: selecting } = event;
         this._inputBuffer.push(key);
-        // Try suggestions navigation first (if suggestions are visible)
-        if (this._completionsState.hasCompletions()) {
+        // When completions are visible, Tab/ArrowDown/ArrowUp switch focus to
+        // the popover. The popover owns its own keyboard handler from there.
+        if (this._completionsState.getCompletions().length > 0) {
             switch (key) {
+                case "Tab":
+                    this._stateManager.setCompletionsPopoverFocused(true);
+                    event.preventDefault();
+                    return;
                 case "ArrowDown":
-                    this._completionsState.selectNext();
+                    this._stateManager.setCompletionsPopoverFocused(true);
                     event.preventDefault();
                     return;
                 case "ArrowUp":
-                    this._completionsState.selectPrevious();
-                    event.preventDefault();
-                    return;
-                case "Enter": {
-                    const selected = this._completionsState.getSelectedCompletion();
-                    if (!selected) {
-                        break;
-                    }
-                    const { text, range } = selected;
-                    this._stateManager.updateFocusedQueryItem(text, range);
-                    event.preventDefault();
-                    return;
-                }
-                case "Escape":
-                    this._completionsState.clearCompletions();
+                    this._stateManager.setCompletionsPopoverFocused(true);
                     event.preventDefault();
                     return;
             }
@@ -82723,11 +82776,11 @@ class demo_KeyboardHandler {
         if (this._stateManager.getSelectionMode() === "segment") {
             switch (key) {
                 case "ArrowLeft":
-                    this._stateManager.navigateSegment(-1);
+                    this._stateManager.moveFocus(-1, selecting, this.hasBufferedInput());
                     event.preventDefault();
                     return;
                 case "ArrowRight":
-                    this._stateManager.navigateSegment(1);
+                    this._stateManager.moveFocus(1, selecting, this.hasBufferedInput());
                     event.preventDefault();
                     return;
                 case "ArrowUp":
@@ -82738,6 +82791,22 @@ class demo_KeyboardHandler {
                     this._stateManager.cycleSibling(1);
                     event.preventDefault();
                     return;
+                case "PageUp": {
+                    const sel = this._stateManager.getSegmentSelection();
+                    if (sel && sel.anchor === sel.focus) {
+                        this._stateManager.cycleSibling(-1);
+                        event.preventDefault();
+                    }
+                    return;
+                }
+                case "PageDown": {
+                    const sel = this._stateManager.getSegmentSelection();
+                    if (sel && sel.anchor === sel.focus) {
+                        this._stateManager.cycleSibling(1);
+                        event.preventDefault();
+                    }
+                    return;
+                }
                 case "Escape":
                     this._stateManager.exit();
                     event.preventDefault();
@@ -82746,6 +82815,14 @@ class demo_KeyboardHandler {
                     this._stateManager.confirm();
                     event.preventDefault();
                     return;
+                case "Backspace":
+                    this._stateManager.removeCurrentSelection("backward");
+                    event.preventDefault();
+                    break;
+                case "Delete":
+                    this._stateManager.removeCurrentSelection("forward");
+                    event.preventDefault();
+                    break;
                 // Any other key falls through to handleInput → insertText,
                 // which auto-switches to text mode before inserting.
             }
@@ -82846,20 +82923,21 @@ function demo_HiddenTextarea() {
     const hasFocus = demo_useSubscribeToTopic(stateManager, demo_Topic.HAS_FOCUS);
     const queryTextSelections = demo_useSubscribeToTopic(stateManager, demo_Topic.QUERY_TEXT_SELECTIONS);
     const querySelection = demo_useSubscribeToTopic(stateManager, demo_Topic.QUERY_SELECTION);
+    const completionsPopoverFocused = demo_useSubscribeToTopic(stateManager, demo_Topic.COMPLETIONS_POPOVER_FOCUSED);
     demo_react.useEffect(function focusTextarea() {
         if (!ref.current) {
             return;
         }
-        if (hasFocus) {
-            // Always call focus when hasFocus is true or queryTextSelections changes.
-            // This handles the case where the textarea lost focus externally
-            // but the state manager still thinks we have focus.
+        if (hasFocus && !completionsPopoverFocused) {
+            // Focus the textarea whenever we have active state and the
+            // completions popover is not holding focus. This also handles
+            // the case where the popover releases focus back to us.
             ref.current.focus({ preventScroll: true });
         }
-        else {
+        else if (!hasFocus) {
             ref.current.blur();
         }
-    }, [hasFocus, queryTextSelections, querySelection]);
+    }, [hasFocus, queryTextSelections, querySelection, completionsPopoverFocused]);
     const handleInput = demo_react.useCallback(function handleInput(event) {
         const target = event.currentTarget;
         keyboardHandler.handleInput(target.value);
@@ -82901,7 +82979,7 @@ function demo_HiddenTextarea() {
 function demo_useLeafNodeMatches(queryItem) {
     const dataContext = demo_react.useContext(demo_SmartNodeSelectorDataContext);
     const dataRevision = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.DATA_REVISION);
-    const matchedLeafNodes = demo_react.useMemo(() => {
+    const matchedLeafNodes = demo_react.useMemo(function computeMatchedLeafNodes() {
         const evaluationResult = dataContext.stateManager.getMatchedNodesForQuery(queryItem.query);
         if (evaluationResult === null) {
             return [];
@@ -82994,7 +83072,7 @@ function demo_TokenRenderer(props) {
         case "STAR":
             return (demo_react.createElement("span", { style: Object.assign({ color: "#f3ad0aff", fontWeight: "bold" }, errorStyle), title: title }, token.value));
         case "DELIMITER":
-            return (demo_react.createElement("span", { style: Object.assign({ color: "#0996e8ff", fontWeight: "bold" }, errorStyle), title: title }, token.value));
+            return (demo_react.createElement("span", { style: Object.assign({ color: "#0996e8ff", fontWeight: "bold", paddingInline: "2px", transform: "scale(0.5)" }, errorStyle), title: title }, "\u27A4"));
         case "LITERAL":
             return (demo_react.createElement("span", { style: Object.assign({ color: "#000" }, errorStyle), title: title }, token.value));
         case "PLUS":
@@ -83046,8 +83124,10 @@ function demo_QuerySegment(props) {
     const focusedSegment = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.FOCUSED_SEGMENT);
     const segmentSelection = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.SEGMENT_SELECTION);
     const isSegmentSelected = (segmentSelection === null || segmentSelection === void 0 ? void 0 : segmentSelection.queryId) === props.queryId &&
-        props.segmentIndex >= Math.min(segmentSelection.anchor, segmentSelection.focus) &&
-        props.segmentIndex <= Math.max(segmentSelection.anchor, segmentSelection.focus);
+        props.segmentIndex >=
+            Math.min(segmentSelection.anchor, segmentSelection.focus) &&
+        props.segmentIndex <=
+            Math.max(segmentSelection.anchor, segmentSelection.focus);
     const textSelections = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.QUERY_TEXT_SELECTIONS);
     const isFocused = (focusedSegment === null || focusedSegment === void 0 ? void 0 : focusedSegment.queryId) === props.queryId &&
         (focusedSegment === null || focusedSegment === void 0 ? void 0 : focusedSegment.segmentIndex) === props.segmentIndex;
@@ -83103,6 +83183,12 @@ function demo_QuerySegment(props) {
     }, [props.tokens, isFocused, options.queryChips.truncation.enable]);
     function makeContent() {
         var _a, _b, _c;
+        if (props.segmentIndex === 0 && props.tokens.length === 0) {
+            return demo_react.createElement(demo_Placeholder, { isVisible: true, isLast: true });
+        }
+        if (props.segmentIndex > 0 && props.tokens.length === 0) {
+            return demo_react.createElement(demo_Placeholder, { isVisible: true, isLast: false });
+        }
         const Component = (_b = (_a = options.ui).inactiveSegmentRenderer) === null || _b === void 0 ? void 0 : _b.call(_a, props.segmentIndex);
         if (!isActive && Component && props.mayUseCustomRenderer) {
             return (demo_react.createElement(Component, { matchedNodes: (_c = matchedNodes === null || matchedNodes === void 0 ? void 0 : matchedNodes.matches) !== null && _c !== void 0 ? _c : new Set() }));
@@ -83116,6 +83202,20 @@ function demo_QuerySegment(props) {
                 backgroundColor: "#e8f0fe",
             }
             : undefined }, makeContent()));
+}
+function demo_Placeholder(props) {
+    const context = demo_react.useContext(demo_SmartNodeSelectorDataContext);
+    if (!props.isVisible) {
+        return null;
+    }
+    const placeholderText = props.isLast
+        ? context.placeholders.newTag
+        : context.placeholders.incompleteTag;
+    return (demo_react.createElement("div", { style: {
+            color: "black",
+            opacity: 0.3,
+            marginLeft: 2,
+        } }, placeholderText));
 }
 function demo_truncateTokensMiddle(tokens, maxChars) {
     const ellipsisLength = 3;
@@ -83204,6 +83304,7 @@ function demo_truncateTokensMiddle(tokens, maxChars) {
 function demo_usePreviousQueriesLeafNodeMatches(beforeQueryItem) {
     const dataContext = demo_react.useContext(demo_SmartNodeSelectorDataContext);
     const dataRevision = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.DATA_REVISION);
+    const queryItems = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.QUERY_ITEMS);
     const queryIndex = dataContext.stateManager.getQueryItemIndexById(beforeQueryItem.id);
     const matchedLeafNodes = demo_react.useMemo(() => {
         const matchedLeafNodes = [];
@@ -83222,7 +83323,7 @@ function demo_usePreviousQueriesLeafNodeMatches(beforeQueryItem) {
             matchedLeafNodes.push(...Array.from(evaluationResult.matches).filter((node) => node.isLeaf));
         }
         return matchedLeafNodes;
-    }, [dataContext.stateManager, queryIndex, dataRevision]);
+    }, [dataContext.stateManager, queryIndex, dataRevision, queryItems]);
     return matchedLeafNodes;
 }
 
@@ -83245,6 +83346,7 @@ function demo_QueryChip(props) {
     const previousQueriesMatchedLeafNodes = demo_usePreviousQueriesLeafNodeMatches(props.queryItem);
     const textSelections = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.QUERY_TEXT_SELECTIONS);
     const querySelection = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.QUERY_SELECTION);
+    const segmentSelection = demo_useSubscribeToTopic(dataContext.stateManager, demo_Topic.SEGMENT_SELECTION);
     const isSelected = demo_react.useMemo(() => {
         if (!querySelection) {
             return false;
@@ -83256,12 +83358,8 @@ function demo_QueryChip(props) {
         return props.index >= range[0] && props.index <= range[1];
     }, [querySelection, props.index]);
     const isDuplicate = demo_react.useMemo(() => {
-        for (const match of matchedLeafNodes) {
-            if (previousQueriesMatchedLeafNodes.includes(match)) {
-                return true;
-            }
-        }
-        return false;
+        const previousIds = new Set(previousQueriesMatchedLeafNodes.map((n) => n.id));
+        return matchedLeafNodes.some((n) => previousIds.has(n.id));
     }, [matchedLeafNodes, previousQueriesMatchedLeafNodes]);
     const handleRemoveTagClick = demo_react.useCallback(function handleRemoveTagClick() {
         dataContext.stateManager.removeQueryItemById(props.queryItem.id);
@@ -83270,9 +83368,12 @@ function demo_QueryChip(props) {
     const queryChipProps = (_a = slotsContext.slotProps.queryChip) !== null && _a !== void 0 ? _a : {};
     const isValid = matchedLeafNodes.length > 0;
     const isEditing = textSelections.find((pos) => pos.queryId === props.queryItem.id) !==
-        undefined;
+        undefined || (segmentSelection === null || segmentSelection === void 0 ? void 0 : segmentSelection.queryId) === props.queryItem.id;
     const parsedQuery = dataContext.stateManager.getParsedQuery(props.queryItem.query);
-    const hasMoreThanOneSegment = ((_b = parsedQuery === null || parsedQuery === void 0 ? void 0 : parsedQuery.segments.length) !== null && _b !== void 0 ? _b : 0) > 1;
+    // We show the remove button for all queries if there are multiple segments in the query,
+    // or if this is not the last query (since the last query can be easily edited to remove segments,
+    // while non-last queries require using the remove button)
+    const shouldShowRemoveButton = ((_b = parsedQuery === null || parsedQuery === void 0 ? void 0 : parsedQuery.segments.length) !== null && _b !== void 0 ? _b : 0) > 1 || !props.isLast;
     const content = demo_react.useMemo(function makeContent() {
         var _a;
         const parsedQuery = dataContext.stateManager.getParsedQuery(props.queryItem.query);
@@ -83323,7 +83424,7 @@ function demo_QueryChip(props) {
                 }
             }
             const segmentTokens = parsedQuery.tokens.slice(segment.tokenStartIndex, segment.tokenEndIndex);
-            nodes.push(demo_react.createElement(demo_QuerySegment, { key: nodes.length, queryId: props.queryItem.id, segmentIndex: segmentIndex, tokens: segmentTokens, diagnostics: diagnostics, mayUseCustomRenderer: !(props.isLast && !hasMoreThanOneSegment) }));
+            nodes.push(demo_react.createElement(demo_QuerySegment, { key: nodes.length, queryId: props.queryItem.id, segmentIndex: segmentIndex, tokens: segmentTokens, diagnostics: diagnostics, mayUseCustomRenderer: !(props.isLast && !shouldShowRemoveButton) }));
             segmentIndex++;
             tokenIndex = segment.tokenEndIndex;
         }
@@ -83338,12 +83439,12 @@ function demo_QueryChip(props) {
         }
         return nodes;
     }, [props.queryItem, dataContext.stateManager, textSelections, options]);
-    return (demo_react.createElement(QueryChipComponent, Object.assign({}, queryChipProps, { "data-querychip-id": props.queryItem.id, style: demo_makeStyle(props.isLast && !hasMoreThanOneSegment, isValid || isEditing, isSelected, isDuplicate), title: !isValid
+    return (demo_react.createElement(QueryChipComponent, Object.assign({}, queryChipProps, { "data-querychip-id": props.queryItem.id, style: demo_makeStyle(props.isLast && !shouldShowRemoveButton, isValid || isEditing, isSelected, isDuplicate), title: !isValid
             ? "No matches for this query"
             : isDuplicate
                 ? "This query has matches that were already matched by previous queries"
                 : undefined }),
-        demo_react.createElement(demo_MatchesCounter, { visible: hasMoreThanOneSegment, matches: matchedLeafNodes }),
+        demo_react.createElement(demo_MatchesCounter, { visible: shouldShowRemoveButton, matches: matchedLeafNodes }),
         demo_react.createElement("div", { "data-query-chip-content": true, style: {
                 display: "flex",
                 alignItems: "center",
@@ -83351,24 +83452,8 @@ function demo_QueryChip(props) {
                 flex: 1,
                 whiteSpace: "pre",
                 marginRight: 4,
-            } },
-            content,
-            demo_react.createElement(demo_Placeholder, { isVisible: props.queryItem.query === "", isLast: props.isLast })),
-        hasMoreThanOneSegment && (demo_react.createElement("button", { onClick: handleRemoveTagClick, "aria-label": "Remove tag" }, "\u2715"))));
-}
-function demo_Placeholder(props) {
-    const context = demo_react.useContext(demo_SmartNodeSelectorDataContext);
-    if (!props.isVisible) {
-        return null;
-    }
-    const placeholderText = props.isLast
-        ? context.placeholders.newTag
-        : context.placeholders.incompleteTag;
-    return (demo_react.createElement("div", { style: {
-            color: "black",
-            opacity: 0.3,
-            marginLeft: 2,
-        } }, placeholderText));
+            } }, content),
+        shouldShowRemoveButton && (demo_react.createElement("button", { onClick: handleRemoveTagClick, "aria-label": "Remove tag" }, "\u2715"))));
 }
 function demo_makeStyle(isLast, isValid, isSelected, isDuplicate) {
     if (isLast) {
@@ -83400,199 +83485,517 @@ function demo_makeStyle(isLast, isValid, isSelected, isDuplicate) {
     };
 }
 
-;// ./src/lib/components/NewSmartNodeSelector/ui/SiblingBrowserPopover.tsx
+;// ./src/lib/components/NewSmartNodeSelector/ui/VirtualizedList.tsx
 
-
-const demo_NUM_SIBLINGS_TO_SHOW_IN_EACH_DIRECTION = 3;
-const demo_ITEM_HEIGHT = 32;
-const demo_ANGLE_PER_STEP_DEG = 18; // rotation per item
-const demo_WHEEL_RADIUS_PX = 150; // translateZ radius
-function demo_SiblingBrowserPopover(props) {
-    const { siblings, currentIndex, anchorElement, onCycle } = props;
-    // Get the previous n siblings, if at the top, we continue from the bottom (circular)
-    const maxNumSiblingsToShow = Math.min(demo_NUM_SIBLINGS_TO_SHOW_IN_EACH_DIRECTION, Math.floor(siblings.length / 2));
-    const siblingsBefore = [];
-    for (let i = 1; i <= maxNumSiblingsToShow; i++) {
-        const index = (currentIndex - i + siblings.length) % siblings.length;
-        siblingsBefore.push(siblings[index]);
-    }
-    siblingsBefore.reverse();
-    const visibleSiblings = maxNumSiblingsToShow * 2 + 1;
-    // Get the next n siblings, if at the bottom, we continue from the top (circular)
-    const siblingsAfter = [];
-    for (let i = 1; i <= maxNumSiblingsToShow; i++) {
-        const index = (currentIndex + i) % siblings.length;
-        siblingsAfter.push(siblings[index]);
-    }
-    const wheelHeight = demo_ITEM_HEIGHT * (visibleSiblings * 2 + 1);
-    return (demo_react.createElement(demo_react.Fragment, null,
-        demo_react.createElement(demo_HalfWheel, { anchorElement: anchorElement, items: siblingsBefore, direction: "up", wheelHeight: wheelHeight, onSelect: (index) => onCycle(-1) }),
-        demo_react.createElement(demo_HalfWheel, { anchorElement: anchorElement, items: siblingsAfter, direction: "down", wheelHeight: wheelHeight, onSelect: (index) => onCycle(1) })));
-}
-function demo_HalfWheel(props) {
-    const popoverRef = demo_react.useRef(null);
-    const updatePosition = demo_react.useCallback(function updatePosition() {
-        if (!props.anchorElement || !popoverRef.current) {
+const demo_DEFAULT_PROPS = {
+    overscanCount: 3,
+};
+function demo_VirtualizedList(props) {
+    const defaultedProps = Object.assign(Object.assign({}, demo_DEFAULT_PROPS), props);
+    const [scrollTop, setScrollTop] = demo_react.useState(0);
+    const scrollContainerRef = demo_react.useRef(null);
+    const prevSelectedIndexRef = demo_react.useRef(null);
+    const didInitialScrollRef = demo_react.useRef(false);
+    const totalHeight = defaultedProps.items.length * defaultedProps.itemHeight;
+    const containerHeight = Math.min(totalHeight, defaultedProps.maxHeight);
+    // Auto-scroll to keep selected item visible
+    demo_react.useEffect(() => {
+        if (defaultedProps.selectedIndex === null ||
+            defaultedProps.selectedIndex === undefined ||
+            !scrollContainerRef.current) {
             return;
         }
-        const rect = props.anchorElement.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const margin = 1;
-        const popoverWidth = 200;
-        const requiredHeight = demo_requiredHalfHeightPx({
-            numItems: props.items.length,
-            itemHeightPx: demo_ITEM_HEIGHT,
-            anglePerStepDeg: demo_ANGLE_PER_STEP_DEG,
-            radiusPx: demo_WHEEL_RADIUS_PX,
-            direction: props.direction,
-            paddingPx: margin,
-        }) *
-            2 +
-            margin;
-        const spaceBelow = viewportHeight - (rect.bottom + margin);
-        const spaceAbove = rect.top - margin;
-        const popoverElement = popoverRef.current;
-        popoverElement.style.position = "fixed";
-        popoverElement.style.left = `${rect.left + rect.width / 2 - popoverWidth / 2}px`;
-        popoverElement.style.width = `${popoverWidth}px`;
-        if (props.direction === "down") {
-            popoverElement.style.top = `${rect.bottom + margin}px`;
-            popoverElement.style.bottom = "unset";
-            popoverElement.style.height = `${Math.min(spaceBelow, requiredHeight)}px`;
-            popoverElement.style.maxHeight = `${Math.min(spaceBelow, requiredHeight)}px`;
+        const selectedIndex = defaultedProps.selectedIndex;
+        const prevSelectedIndex = prevSelectedIndexRef.current;
+        prevSelectedIndexRef.current = selectedIndex;
+        const itemTop = selectedIndex * defaultedProps.itemHeight;
+        const itemBottom = itemTop + defaultedProps.itemHeight;
+        const currentScrollTop = scrollContainerRef.current.scrollTop;
+        const visibleTop = currentScrollTop;
+        const visibleBottom = currentScrollTop + containerHeight;
+        // Determine scroll direction
+        const isScrollingDown = prevSelectedIndex === null || selectedIndex > prevSelectedIndex;
+        if (isScrollingDown) {
+            // Scrolling down - keep item at bottom of visible area
+            if (itemBottom > visibleBottom) {
+                scrollContainerRef.current.scrollTop =
+                    itemBottom - containerHeight;
+            }
         }
         else {
-            popoverElement.style.bottom = `${viewportHeight - rect.top + margin}px`;
-            popoverElement.style.top = "unset";
-            popoverElement.style.height = `${Math.min(spaceAbove, requiredHeight)}px`;
-            popoverElement.style.maxHeight = `${Math.min(spaceAbove, requiredHeight)}px`;
+            // Scrolling up - keep item at top of visible area
+            if (itemTop < visibleTop) {
+                scrollContainerRef.current.scrollTop = itemTop;
+            }
         }
-    }, [props.anchorElement, props.direction, props.wheelHeight, props.items]);
-    demo_react.useEffect(function onAnchorChange() {
-        var _a, _b;
-        if (props.anchorElement && props.items.length > 0) {
-            (_a = popoverRef.current) === null || _a === void 0 ? void 0 : _a.showPopover();
+    }, [
+        defaultedProps.selectedIndex,
+        defaultedProps.itemHeight,
+        containerHeight,
+    ]);
+    // Scroll to initialScrollIndex once on mount
+    demo_react.useEffect(() => {
+        if (didInitialScrollRef.current ||
+            defaultedProps.initialScrollIndex === null ||
+            defaultedProps.initialScrollIndex === undefined ||
+            !scrollContainerRef.current) {
+            return;
         }
-        else {
-            (_b = popoverRef.current) === null || _b === void 0 ? void 0 : _b.hidePopover();
-        }
-    }, [props.anchorElement, props.items.length]);
-    demo_useElementBoundingRect(props.anchorElement, updatePosition);
-    return (demo_react.createElement("div", { ref: popoverRef, popover: "manual", "data-sibling-browser-popover": true, onMouseDown: (e) => e.preventDefault(), style: {
+        didInitialScrollRef.current = true;
+        scrollContainerRef.current.scrollTop =
+            defaultedProps.initialScrollIndex * defaultedProps.itemHeight;
+    });
+    // Calculate visible range
+    const startIndex = Math.max(0, Math.floor(scrollTop / defaultedProps.itemHeight) -
+        (defaultedProps.overscanCount || 2));
+    const endIndex = Math.min(defaultedProps.items.length, Math.ceil((scrollTop + containerHeight) / defaultedProps.itemHeight) +
+        (defaultedProps.overscanCount || 2));
+    const handleScroll = demo_react.useCallback(function handleScroll(e) {
+        setScrollTop(e.currentTarget.scrollTop);
+    }, []);
+    const visibleItems = defaultedProps.items.slice(startIndex, endIndex);
+    return (demo_react.createElement("div", { ref: scrollContainerRef, onScroll: handleScroll, style: {
+            overflowY: "auto",
+            height: containerHeight,
+            position: "relative",
+        } },
+        demo_react.createElement("div", { style: { height: totalHeight, position: "relative" } }, visibleItems.map((item, index) => {
+            const itemIndex = startIndex + index;
+            return (demo_react.createElement("div", { key: itemIndex, tabIndex: 0, style: {
+                    position: "absolute",
+                    top: itemIndex * defaultedProps.itemHeight,
+                    height: defaultedProps.itemHeight,
+                    maxHeight: defaultedProps.itemHeight,
+                    overflowY: "hidden",
+                    width: "100%",
+                    boxSizing: "border-box",
+                }, onClick: () => { var _a; return (_a = defaultedProps.onItemClick) === null || _a === void 0 ? void 0 : _a.call(defaultedProps, item, itemIndex); }, onMouseEnter: () => { var _a; return (_a = defaultedProps.onItemHover) === null || _a === void 0 ? void 0 : _a.call(defaultedProps, item, itemIndex); } },
+                demo_react.createElement(demo_react.Fragment, { key: itemIndex }, defaultedProps.renderItem(item, itemIndex === defaultedProps.selectedIndex, defaultedProps.context))));
+        }))));
+}
+
+;// ./src/lib/components/NewSmartNodeSelector/completions-strategies/simple/Component.tsx
+
+
+function demo_getCompletionKey(item) {
+    return `${item.kind}::${item.label}::${item.insertText}::${item.replaceRange.start}::${item.replaceRange.end}`;
+}
+function demo_isSimpleNodeCompletion(item) {
+    return item.kind === "segment" && item.origin.kind === "single";
+}
+function demo_SimpleCompletionStrategyComponent(props) {
+    if (props.selectionMode === "segment") {
+        return demo_react.createElement(demo_SegmentCompletions, Object.assign({}, props));
+    }
+    else {
+        return demo_react.createElement(demo_TextCompletions, Object.assign({}, props));
+    }
+}
+function demo_renderSegmentItem(item, isHighlighted, context) {
+    const id = demo_getCompletionKey(item);
+    const isChecked = context.selectedIds.includes(id);
+    return (demo_react.createElement("div", { style: {
+            display: "flex",
+            alignItems: "center",
+            padding: 4,
+            height: "100%",
             boxSizing: "border-box",
-            border: 0,
-            backgroundColor: "transparent",
-            inset: "unset",
-            padding: 0,
+            backgroundColor: isHighlighted ? "#def" : undefined,
+            cursor: "pointer",
+        } },
+        demo_react.createElement("input", { type: "checkbox", checked: isChecked, readOnly: true, style: { pointerEvents: "none" } }),
+        demo_react.createElement("div", { style: { fontWeight: 800, marginLeft: 4 } }, item.label),
+        demo_react.createElement("span", { style: { marginLeft: 8 } }, item.origin.kind === "single"
+            ? item.origin.node.description
+            : `${item.origin.count} matching nodes`)));
+}
+function demo_SegmentCompletions(props) {
+    const items = demo_react.useMemo(() => {
+        return props.completions.filter(demo_isSimpleNodeCompletion);
+    }, [props.completions]);
+    const highlightedIndex = demo_react.useMemo(() => {
+        if (props.state.highlightedId === null)
+            return null;
+        const idx = items.findIndex((item) => demo_getCompletionKey(item) === props.state.highlightedId);
+        return idx === -1 ? null : idx;
+    }, [props.state.highlightedId, items]);
+    // Scroll to first selected item when popover first opens (before focus).
+    // Captured once on mount via ref so it doesn't change on re-renders.
+    const initialScrollIndexRef = demo_react.useRef(null);
+    if (initialScrollIndexRef.current === null) {
+        for (const id of props.state.selectedIds) {
+            const idx = items.findIndex((item) => demo_getCompletionKey(item) === id);
+            if (idx !== -1) {
+                initialScrollIndexRef.current = idx;
+                break;
+            }
+        }
+    }
+    const initialScrollIndex = initialScrollIndexRef.current;
+    const context = demo_react.useMemo(() => ({ selectedIds: props.state.selectedIds }), [props.state.selectedIds]);
+    const ITEM_HEIGHT = 32;
+    const HEADER_HEIGHT = 41; // button row height
+    return (demo_react.createElement("div", { style: {
+            maxHeight: props.maxContainerHeight,
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
         } },
-        demo_react.createElement("ul", { style: {
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                flex: 1,
-                overflow: "hidden",
+        demo_react.createElement("div", { style: {
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: props.direction === "down" ? "flex-start" : "flex-end",
-            } }, props.items.map((name, index) => {
-            let offset = props.items.length - index; // up: N..1 (last nearest)
-            if (props.direction === "down") {
-                offset = -(index + 1); // down: -1..-N (first nearest)
+                gap: 8,
+                padding: 8,
+                borderBottom: "1px solid #eee",
+                flexShrink: 0,
+            } },
+            demo_react.createElement("button", { type: "button", onClick: props.accept }, "Apply")),
+        items.length === 0 ? (demo_react.createElement("div", { style: { padding: 8 } }, "No matching nodes")) : (demo_react.createElement(demo_VirtualizedList, { items: items, itemHeight: ITEM_HEIGHT, maxHeight: Math.min(props.maxContainerHeight - HEADER_HEIGHT, ITEM_HEIGHT * 15), renderItem: demo_renderSegmentItem, context: context, selectedIndex: highlightedIndex, initialScrollIndex: initialScrollIndex, onItemClick: (item) => {
+                const id = demo_getCompletionKey(item);
+                props.setState((prev) => (Object.assign(Object.assign({}, prev), { highlightedId: id, selectedIds: prev.selectedIds.includes(id)
+                        ? prev.selectedIds.filter((x) => x !== id)
+                        : [...prev.selectedIds, id] })));
+            }, onItemHover: (item) => {
+                const id = demo_getCompletionKey(item);
+                props.setState((prev) => (Object.assign(Object.assign({}, prev), { highlightedId: id })));
+            } }))));
+}
+function demo_TextCompletions(props) {
+    const syntaxCompletions = demo_react.useMemo(() => {
+        return props.completions.filter((comp) => comp.kind !== "node" && comp.kind !== "segment");
+    }, [props.completions]);
+    const nodeCompletions = demo_react.useMemo(() => {
+        return props.completions.filter((comp) => comp.kind === "node");
+    }, [props.completions]);
+    const nodeSelectedIndex = demo_react.useMemo(() => {
+        if (props.state.highlightedId === null)
+            return null;
+        const idx = nodeCompletions.findIndex((item) => demo_getCompletionKey(item) === props.state.highlightedId);
+        return idx === -1 ? null : idx;
+    }, [props.state.highlightedId, nodeCompletions]);
+    const syntaxSelectedIndex = demo_react.useMemo(() => {
+        if (props.state.highlightedId === null)
+            return null;
+        const idx = syntaxCompletions.findIndex((item) => demo_getCompletionKey(item) === props.state.highlightedId);
+        return idx === -1 ? null : idx;
+    }, [props.state.highlightedId, syntaxCompletions]);
+    const handleSelectCompletion = demo_react.useCallback((item) => {
+        const id = demo_getCompletionKey(item);
+        props.setState((prev) => (Object.assign(Object.assign({}, prev), { highlightedId: id, selectedIds: [id] })));
+        props.accept();
+    }, [props]);
+    return (demo_react.createElement(demo_react.Fragment, null,
+        demo_renderSyntaxCompletionItems(syntaxCompletions, handleSelectCompletion, syntaxSelectedIndex),
+        demo_react.createElement("div", { style: { padding: 4, overflow: "auto" } },
+            demo_react.createElement(demo_VirtualizedList, { items: nodeCompletions, itemHeight: 48, maxHeight: Math.min(props.maxContainerHeight - 24, 48 * 10), renderItem: demo_renderNodeCompletionItem, onItemClick: (item) => handleSelectCompletion(item), selectedIndex: nodeSelectedIndex })),
+        nodeCompletions.length === 0 && syntaxCompletions.length === 0 && (demo_react.createElement("div", { style: {
+                padding: "8px 12px",
+                color: "#666",
+                fontStyle: "italic",
+            } }, "No completions"))));
+}
+function demo_renderSyntaxCompletionItems(completions, onClick, selectedIndex) {
+    function makeTitle(completion) {
+        if (completion.kind === "group") {
+            if (completion.insertText === "(") {
+                return "Open a new group";
             }
-            const rotateX = offset * demo_ANGLE_PER_STEP_DEG;
-            const abs = Math.abs(offset);
-            const opacity = 1 - (abs - 1) * 0.2;
-            const scale = 1 - (abs - 1) * 0.15;
-            return (demo_react.createElement("li", { key: index, style: {
-                    padding: "4px 10px",
-                    cursor: "pointer",
-                    backgroundColor: "transparent",
-                    fontWeight: 600,
-                    fontSize: "13px",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    textShadow: "0 0 5px rgba(255, 255, 255, 0.8)",
-                    textAlign: "center",
-                    transformStyle: "preserve-3d",
-                    transform: `translateY(${offset * demo_ITEM_HEIGHT}px) rotateX(${rotateX}deg) translateZ(${demo_WHEEL_RADIUS_PX}px) scale(${scale})`,
-                    opacity,
-                }, title: name }, name));
-        }))));
-}
-function demo_requiredHalfHeightPx(params) {
-    const { numItems, itemHeightPx, anglePerStepDeg, radiusPx, direction, paddingPx = 8, } = params;
-    const a = (anglePerStepDeg * Math.PI) / 180;
-    let minY = Infinity;
-    let maxY = -Infinity;
-    for (let index = 0; index < numItems; index++) {
-        const offset = direction === "down" ? -(index + 1) : numItems - index;
-        const theta = offset * a;
-        const yTotal = offset * itemHeightPx - radiusPx * Math.sin(theta);
-        minY = Math.min(minY, yTotal);
-        maxY = Math.max(maxY, yTotal);
+            else if (completion.insertText === ")") {
+                return "Close the current group";
+            }
+        }
+        else if (completion.kind === "set") {
+            if (completion.insertText === "{") {
+                return "Open a new set for unions";
+            }
+            else if (completion.insertText === "}") {
+                return "Close the current set";
+            }
+        }
+        else if (completion.kind === "unionFlag") {
+            if (completion.insertText === "+") {
+                return "Union flag: create a union of the children of all the matched nodes";
+            }
+        }
+        else if (completion.kind === "wildcard") {
+            if (completion.insertText === "*") {
+                return "Wildcard: matches any single segment";
+            }
+            else if (completion.insertText === "**") {
+                return "Deep wildcard: matches any number of segments";
+            }
+            else if (completion.insertText === "?") {
+                return "Wildcard: matches any single character in a segment";
+            }
+        }
+        else if (completion.kind === "delimiter") {
+            return "Delimiter: use to start new segment";
+        }
+        else if (completion.kind === "operator") {
+            if (completion.insertText === "|") {
+                return "OR operator: matches either side";
+            }
+            else if (completion.insertText === ",") {
+                return "Separator for set items";
+            }
+        }
+        return "";
     }
-    return maxY - minY + itemHeightPx + paddingPx * 2;
+    return (demo_react.createElement("ul", { style: {
+            listStyle: "none",
+            margin: 0,
+            padding: 4,
+            display: "flex",
+            gap: "8px",
+            borderBottom: "1px solid #ccc",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            alignItems: "center",
+        } }, completions.map((completion, index) => (demo_react.createElement("li", { key: index, className: "suggestion-item", style: {
+            padding: "8px 12px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "1em",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            backgroundColor: selectedIndex === index ? "#235de4ff" : "#f5f5f5",
+            color: selectedIndex === index ? "white" : "black",
+        }, title: makeTitle(completion), onClick: () => onClick(completion) }, completion.insertText)))));
+}
+function demo_renderNodeCompletionItem(completion, isSelected) {
+    let label = completion.insertText;
+    let detail = null;
+    if (completion.origin.kind === "single") {
+        const name = completion.origin.node.name;
+        const range = completion.origin.nodeNameRange;
+        const left = name.slice(0, range.start);
+        const mid = name.slice(range.start, range.end);
+        const right = name.slice(range.end);
+        label = (demo_react.createElement("span", { style: { color: "rgba(199, 199, 199, 1)" } },
+            left,
+            demo_react.createElement("span", { style: { color: "black" } }, mid),
+            right));
+        detail = completion.origin.node.description;
+    }
+    else if (completion.origin.kind === "multi") {
+        detail = `${completion.origin.count} matching nodes`;
+    }
+    return (demo_react.createElement("li", { className: "suggestion-item", style: {
+            padding: "8px 12px",
+            cursor: "pointer",
+            backgroundColor: isSelected ? "#e6f0ff" : "transparent",
+            display: "flex",
+            alignItems: "center",
+            gap: "1em",
+        } },
+        demo_react.createElement("div", { style: { fontWeight: 800 } }, label),
+        detail && (demo_react.createElement("div", { style: { fontSize: "smaller", color: "#666" } }, detail))));
 }
 
-;// ./src/lib/components/NewSmartNodeSelector/ui/SiblingBrowserController.tsx
+;// ./src/lib/components/NewSmartNodeSelector/completions-strategies/simple/Strategy.ts
 
-
-
-
-
-function demo_SiblingBrowserController(props) {
-    const { stateManager } = demo_react.useContext(demo_SmartNodeSelectorDataContext);
-    const segmentSelection = demo_useSubscribeToTopic(stateManager, demo_Topic.SEGMENT_SELECTION);
-    // Subscribe to QUERY_ITEMS so we re-derive browser info after a sibling cycle
-    const queryItems = demo_useSubscribeToTopic(stateManager, demo_Topic.QUERY_ITEMS);
-    const siblingBrowserInfo = demo_react.useMemo(() => {
-        if (!segmentSelection) {
-            return null;
+class demo_SimpleCompletionStrategy {
+    constructor() {
+        this.component = demo_SimpleCompletionStrategyComponent;
+    }
+    reconcileState(args) {
+        return demo_reconcileSimpleState(args.prevState, args.completions, args.selectionMode, args.currentSegmentSelections);
+    }
+    onFocus(args) {
+        var _a;
+        if (args.selectionMode === "segment") {
+            const items = demo_getSimpleItems(args.completions);
+            const validIdSet = new Set(items.map(demo_Strategy_getCompletionKey));
+            const firstSelectedId = (_a = args.state.selectedIds.find((id) => validIdSet.has(id))) !== null && _a !== void 0 ? _a : null;
+            const targetId = firstSelectedId !== null && firstSelectedId !== void 0 ? firstSelectedId : (items.length > 0 ? demo_Strategy_getCompletionKey(items[0]) : null);
+            return {
+                nextState: Object.assign(Object.assign({}, args.state), { isFocused: true, highlightedId: targetId }),
+            };
         }
-        return stateManager.getSegmentBrowserInfo(segmentSelection.queryId, segmentSelection.focus);
-        // queryItems is intentionally listed so we refresh after cycling
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [segmentSelection, stateManager, queryItems]);
-    const anchorElement = demo_react.useMemo(() => {
-        var _a, _b;
-        if (!segmentSelection) {
-            return null;
-        }
-        return ((_b = (_a = props.mainRef.current) === null || _a === void 0 ? void 0 : _a.querySelector(`[data-segment-query-id="${segmentSelection.queryId}"][data-segment-index="${segmentSelection.focus}"]`)) !== null && _b !== void 0 ? _b : null);
-        // queryItems dependency ensures we re-query the DOM after a sibling cycle
-        // rewrites the query text (segment elements get re-rendered)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [segmentSelection, props.mainRef, queryItems]);
-    const handleCycle = demo_react.useCallback(function handleCycle(direction) {
-        stateManager.cycleSibling(direction);
-    }, [stateManager]);
-    const handleWheel = demo_react.useCallback(function handleWheel(e) {
-        if (stateManager.getSelectionMode() !== "segment") {
-            return;
-        }
-        e.preventDefault();
-        stateManager.cycleSibling(e.deltaY > 0 ? 1 : -1);
-    }, [stateManager]);
-    // Attach wheel listener to the root element
-    demo_react.useEffect(function setupWheelListener() {
-        const rootEl = props.mainRef.current;
-        if (!rootEl) {
-            return;
-        }
-        // passive: false is required to allow preventDefault
-        rootEl.addEventListener("wheel", handleWheel, { passive: false });
-        return () => {
-            rootEl.removeEventListener("wheel", handleWheel);
+        const syntaxCompletions = args.completions.filter((item) => item.kind !== "node" && item.kind !== "segment");
+        const nodeCompletions = args.completions.filter((item) => item.kind === "node");
+        const allCompletions = [...syntaxCompletions, ...nodeCompletions];
+        const firstId = allCompletions.length > 0
+            ? demo_Strategy_getCompletionKey(allCompletions[0])
+            : null;
+        return {
+            nextState: Object.assign(Object.assign({}, args.state), { isFocused: true, highlightedId: firstId }),
         };
-    }, [props.mainRef, handleWheel]);
-    if (!siblingBrowserInfo || siblingBrowserInfo.siblings.length === 0) {
-        return demo_react.createElement(demo_react.Fragment, null);
     }
-    return (demo_react.createElement(demo_SiblingBrowserPopover, { siblings: siblingBrowserInfo.siblings, currentIndex: siblingBrowserInfo.currentIndex, anchorElement: anchorElement, onCycle: handleCycle }));
+    onKeyDown(event, args) {
+        if (args.selectionMode !== "segment") {
+            const syntaxCompletions = args.completions.filter((item) => item.kind !== "node" && item.kind !== "segment");
+            const nodeCompletions = args.completions.filter((item) => item.kind === "node");
+            const allCompletions = [...syntaxCompletions, ...nodeCompletions];
+            switch (event.key) {
+                case "ArrowDown":
+                    return {
+                        nextState: Object.assign(Object.assign({}, args.state), { highlightedId: demo_moveHighlightedId(args.state.highlightedId, allCompletions, 1) }),
+                    };
+                case "ArrowUp":
+                    return {
+                        nextState: Object.assign(Object.assign({}, args.state), { highlightedId: demo_moveHighlightedId(args.state.highlightedId, allCompletions, -1) }),
+                    };
+                case "Enter":
+                case "Tab":
+                    return { accept: true };
+                case "Escape":
+                    return { close: true };
+                default:
+                    return {};
+            }
+        }
+        const items = demo_getSimpleItems(args.completions);
+        switch (event.key) {
+            case "ArrowDown":
+                return {
+                    nextState: Object.assign(Object.assign({}, args.state), { highlightedId: demo_moveHighlightedId(args.state.highlightedId, items, 1) }),
+                };
+            case "ArrowUp":
+                return {
+                    nextState: Object.assign(Object.assign({}, args.state), { highlightedId: demo_moveHighlightedId(args.state.highlightedId, items, -1) }),
+                };
+            case " ": {
+                const highlightedId = args.state.highlightedId;
+                if (!highlightedId) {
+                    return {};
+                }
+                const alreadySelected = args.state.selectedIds.includes(highlightedId);
+                return {
+                    nextState: Object.assign(Object.assign({}, args.state), { selectedIds: alreadySelected
+                            ? args.state.selectedIds.filter((id) => id !== highlightedId)
+                            : [...args.state.selectedIds, highlightedId] }),
+                };
+            }
+            case "Enter": {
+                const highlightedId = args.state.highlightedId;
+                if (!highlightedId) {
+                    return {};
+                }
+                if (args.state.selectedIds.length > 0) {
+                    return { accept: true };
+                }
+                return {
+                    nextState: Object.assign(Object.assign({}, args.state), { selectedIds: [...args.state.selectedIds, highlightedId] }),
+                    accept: true,
+                };
+            }
+            case "Tab":
+                return { accept: true };
+            case "Escape":
+                return { close: true };
+            default:
+                return {};
+        }
+    }
+    getAppliedCompletion(args) {
+        var _a, _b, _c, _d;
+        if (args.selectionMode === "segment") {
+            const items = demo_getSimpleItems(args.completions);
+            const selectedItems = items.filter((item) => args.state.selectedIds.includes(demo_Strategy_getCompletionKey(item)));
+            if (selectedItems.length === 0) {
+                return null;
+            }
+            const firstSelectedItem = selectedItems[0];
+            let text = selectedItems.map((item) => item.insertText).join("|");
+            if (((_b = (_a = args.caretContext) === null || _a === void 0 ? void 0 : _a.segmentIndex) !== null && _b !== void 0 ? _b : 0) ===
+                args.queryContext.segmentCount - 1 &&
+                !(firstSelectedItem.origin.kind === "single" &&
+                    firstSelectedItem.origin.node.isLeaf)) {
+                text = `${text}${args.delimiter}`;
+            }
+            return {
+                text,
+                range: (_d = (_c = args.caretContext) === null || _c === void 0 ? void 0 : _c.segment.charRange) !== null && _d !== void 0 ? _d : {
+                    start: 0,
+                    end: 0,
+                },
+                moveFocus: true,
+            };
+        }
+        const syntaxCompletions = args.completions.filter((item) => item.kind !== "node" && item.kind !== "segment");
+        const nodeCompletions = args.completions.filter((item) => item.kind === "node");
+        const items = [...syntaxCompletions, ...nodeCompletions];
+        const selectedItems = items.filter((item) => args.state.selectedIds.includes(demo_Strategy_getCompletionKey(item)));
+        if (selectedItems.length === 0) {
+            return null;
+        }
+        const selectedItem = selectedItems[0];
+        return {
+            text: selectedItem.insertText,
+            range: selectedItem.replaceRange,
+        };
+    }
+}
+function demo_Strategy_getCompletionKey(item) {
+    return `${item.kind}::${item.label}::${item.insertText}::${item.replaceRange.start}::${item.replaceRange.end}`;
+}
+function demo_Strategy_isSimpleNodeCompletion(item) {
+    if (item.kind !== "segment") {
+        return false;
+    }
+    // Temporary rule:
+    // only accept single-origin node completions.
+    return item.origin.kind === "single";
+}
+function demo_getSimpleItems(completions) {
+    return completions.filter(demo_Strategy_isSimpleNodeCompletion);
+}
+function demo_reconcileSimpleState(prevState, completions, selectionMode, currentSegmentSelections = []) {
+    var _a, _b, _c;
+    const isFocused = (_a = prevState === null || prevState === void 0 ? void 0 : prevState.isFocused) !== null && _a !== void 0 ? _a : false;
+    const items = demo_getSimpleItems(completions);
+    const validIds = new Set(items.map(demo_Strategy_getCompletionKey));
+    const persistedIds = (_b = prevState === null || prevState === void 0 ? void 0 : prevState.selectedIds.filter((id) => validIds.has(id))) !== null && _b !== void 0 ? _b : [];
+    const selectionSet = new Set(currentSegmentSelections);
+    const currentSelectionIds = items
+        .filter((item) => item.origin.kind === "single" &&
+        selectionSet.has(item.origin.node))
+        .map(demo_Strategy_getCompletionKey);
+    // Persist the user's previous selection only when it overlaps with the
+    // nodes currently matched by the segment text. If cycling moved to a
+    // different node the persisted IDs point to the old node (still a valid
+    // sibling, so still in validIds) and must be replaced.
+    const persistedAlignsCurrent = persistedIds.length > 0 &&
+        currentSelectionIds.some((id) => persistedIds.includes(id));
+    const selectedIds = persistedAlignsCurrent
+        ? persistedIds
+        : currentSelectionIds;
+    // Only auto-highlight when already focused; no default highlight on fresh open
+    let highlightedId = null;
+    if (prevState !== null && !persistedAlignsCurrent && selectedIds.length > 0) {
+        // Cycling moved to a different node — follow the new selection.
+        highlightedId = selectedIds[0];
+    }
+    else if ((prevState === null || prevState === void 0 ? void 0 : prevState.highlightedId) && validIds.has(prevState.highlightedId)) {
+        highlightedId = prevState.highlightedId;
+    }
+    else if (isFocused) {
+        if (selectionMode === "segment") {
+            highlightedId =
+                (_c = selectedIds.find((id) => validIds.has(id))) !== null && _c !== void 0 ? _c : (items.length > 0 ? demo_Strategy_getCompletionKey(items[0]) : null);
+        }
+        else {
+            highlightedId =
+                items.length > 0 ? demo_Strategy_getCompletionKey(items[0]) : null;
+        }
+    }
+    return {
+        highlightedId,
+        selectedIds,
+        isFocused,
+    };
+}
+function demo_moveHighlightedId(currentId, items, direction) {
+    if (items.length === 0) {
+        return null;
+    }
+    const keys = items.map(demo_Strategy_getCompletionKey);
+    const currentIndex = currentId ? keys.indexOf(currentId) : -1;
+    if (currentIndex === -1) {
+        return keys[0];
+    }
+    const nextIndex = Math.max(0, Math.min(currentIndex + direction, keys.length - 1));
+    return keys[nextIndex];
 }
 
 ;// ./src/lib/components/NewSmartNodeSelector/SmartNodeSelector.tsx
@@ -83602,7 +84005,6 @@ function demo_SiblingBrowserController(props) {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 
 
 
@@ -83634,7 +84036,7 @@ const demo_DEFAULT_SLOT_PROPS = {
     suggestionItem: {},
 };
 const demo_SmartNodeSelector_DEFAULT_OPTIONS = {
-    completionsAdapter: new demo_AdvancedCompletionAdapter(),
+    completionStrategy: new demo_SimpleCompletionStrategy(),
     inputModifier: (input) => input,
     ui: {
         inactiveSegmentRenderer: () => null,
@@ -83689,7 +84091,7 @@ function demo_SmartNodeSelector_SmartNodeSelector(props) {
     const completionsState = demo_react.useMemo(() => {
         return new demo_CompletionsState({
             treeAccessor,
-            completionsAdapter: defaultedOptions.completionsAdapter,
+            completionStrategy: defaultedOptions.completionStrategy,
             matchOptions: {
                 caseInsensitive: defaultedOptions.matching.caseInsensitive,
             },
@@ -83697,10 +84099,11 @@ function demo_SmartNodeSelector_SmartNodeSelector(props) {
         });
     }, [
         treeAccessor,
-        defaultedOptions.completionsAdapter,
+        defaultedOptions.completionStrategy,
         defaultedOptions.matching.caseInsensitive,
     ]);
     demo_react.useEffect(() => {
+        var _a, _b, _c, _d, _e, _f;
         if (!completionContext) {
             completionsState.clearCompletions();
             return;
@@ -83710,7 +84113,8 @@ function demo_SmartNodeSelector_SmartNodeSelector(props) {
             completionsState.clearCompletions();
             return;
         }
-        completionsState.updateCompletions(parsedQuery, completionContext.queryTextSelection.focus);
+        const currentSegmentSelections = Array.from((_b = (_a = stateManager.getMatchedNodesForQuerySegment(completionContext.queryId, completionContext.segmentIndex)) === null || _a === void 0 ? void 0 : _a.matches) !== null && _b !== void 0 ? _b : []);
+        completionsState.updateCompletions(parsedQuery, (_f = (_d = (_c = completionContext.queryTextSelection) === null || _c === void 0 ? void 0 : _c.focus) !== null && _d !== void 0 ? _d : (_e = parsedQuery.segments[completionContext.segmentIndex]) === null || _e === void 0 ? void 0 : _e.charRange.end) !== null && _f !== void 0 ? _f : 0, completionContext.selectionMode, currentSegmentSelections);
     }, [completionContext, completionsState, stateManager]);
     demo_react.useEffect(() => {
         stateManager.updateTreeAccessor(treeAccessor);
@@ -83736,7 +84140,7 @@ function demo_SmartNodeSelector_SmartNodeSelector(props) {
             stateManager,
             completionsState,
             placeholders: {
-                newTag: (_b = (_a = props.placeholders) === null || _a === void 0 ? void 0 : _a.newTag) !== null && _b !== void 0 ? _b : "Type to search...",
+                newTag: (_b = (_a = props.placeholders) === null || _a === void 0 ? void 0 : _a.newTag) !== null && _b !== void 0 ? _b : "Add query...",
                 incompleteTag: (_d = (_c = props.placeholders) === null || _c === void 0 ? void 0 : _c.incompleteQuery) !== null && _d !== void 0 ? _d : "Continue typing...",
             },
             delimiter: defaultedOptions.lexical.segmentDelimiter,
@@ -83764,8 +84168,7 @@ function demo_SmartNodeSelector_SmartNodeSelector(props) {
                         queryItems.map((queryItem, index) => (demo_react.createElement(demo_QueryChip, { key: queryItem.id, queryItem: queryItem, isLast: index === queryItems.length - 1, index: index }))),
                         demo_react.createElement(demo_CaretAndSelectionRenderer, { mainRef: ref })),
                     demo_react.createElement(demo_DebugInfo, null),
-                    demo_react.createElement(demo_CompletionsPopover, { mainRef: ref }),
-                    demo_react.createElement(demo_SiblingBrowserController, { mainRef: ref }))))));
+                    demo_react.createElement(demo_CompletionsPopover, { mainRef: ref }))))));
 }
 
 ;// ./src/demo/testdata.ts
@@ -143956,7 +144359,7 @@ const src_demo_SmartNodeSelectorTest = () => {
         selectedIds: [],
         selectedTags: [],
     });
-    const [testData, setTestData] = demo_react.useState("vectorTestData");
+    const [testData, setTestData] = demo_react.useState("simpleTestData");
     const [newSelectorOptions, setNewSelectorOptions] = demo_react.useState({
         completions: {
             maxNumberCompletions: 10,
@@ -144024,15 +144427,15 @@ const src_demo_SmartNodeSelectorTest = () => {
                         color: "#666",
                     } }, "None selected")))),
         demo_react.createElement("h3", null, "New SmartNodeSelector"),
-        demo_react.createElement(demo_SmartNodeSelector_SmartNodeSelector, { key: JSON.stringify(newSelectorOptions), data: demo_TEST_DATA_MAP[testData], options: Object.assign(Object.assign({}, newSelectorOptions), { completionsAdapter: newSelectorOptions.mode === "simple"
-                    ? new demo_SimpleCompletionsAdapter()
+        demo_react.createElement(demo_SmartNodeSelector_SmartNodeSelector, { key: JSON.stringify(newSelectorOptions), data: demo_TEST_DATA_MAP[testData], options: Object.assign(Object.assign({}, newSelectorOptions), { completionStrategy: newSelectorOptions.mode === "simple"
+                    ? new demo_SimpleCompletionStrategy()
                     : undefined, inputModifier: testData === "simpleTestData"
                     ? undefined
                     : demo_vectorSelectorModifier, ui: {
                     inactiveSegmentRenderer: testData === "simpleTestData"
                         ? undefined
                         : demo_IconRenderer,
-                } }), initialValue: ["W:WOPT:A1", "W:WOPT:A2"] }),
+                } }), initialValue: [] }),
         demo_react.createElement("div", { style: { marginTop: "30px" } },
             demo_react.createElement(demo_OptionsConfigurator, { options: newSelectorOptions, onChange: setNewSelectorOptions }))));
 };
