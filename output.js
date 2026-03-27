@@ -81009,7 +81009,10 @@ class demo_StateManager {
         if (((_a = this._queriesStoreDelegate.getLastItem()) === null || _a === void 0 ? void 0 : _a.id) !== queryItem.id) {
             return false;
         }
-        const queries = text.split("\n");
+        const queries = text
+            .split("\n")
+            .map((q) => q.trim())
+            .filter((q) => q.length > 0);
         if (queries.length < 1) {
             return false;
         }
@@ -82818,15 +82821,14 @@ class demo_KeyboardHandler {
                 case "Backspace":
                     this._stateManager.removeCurrentSelection("backward");
                     event.preventDefault();
-                    break;
+                    return;
                 case "Delete":
                     this._stateManager.removeCurrentSelection("forward");
                     event.preventDefault();
-                    break;
+                    return;
                 // Any other key falls through to handleInput → insertText,
                 // which auto-switches to text mode before inserting.
             }
-            return;
         }
         // Default keyboard handling - route to StateManager operations
         switch (key) {
@@ -144402,7 +144404,8 @@ const src_demo_SmartNodeSelectorTest = () => {
                 padding: "15px",
                 backgroundColor: "#f5f5f5",
                 borderRadius: "4px",
-                height: "50vh",
+                height: "10vh",
+                overflowY: "scroll",
             } },
             demo_react.createElement("h3", null, "Selection State:"),
             demo_react.createElement("div", { style: { marginTop: "10px" } },
